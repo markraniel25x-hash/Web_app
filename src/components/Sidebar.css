@@ -1,0 +1,166 @@
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+/* FULL COLLAPSE: Hide sidebar completely */
+.sidebar.hidden {
+  width: 0;
+  border-right: none;
+  padding: 0;
+}
+
+.sidebar-header {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid #f1f5f9;
+  min-width: 260px; /* Prevent squishing during transition */
+}
+
+.brand-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.asa-logo-small {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.asa-logo-small img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.brand-name {
+  font-weight: 800;
+  color: #5b21b6; /* Muted Violet */
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+  min-width: 260px;
+}
+
+.nav-group {
+  padding: 0 12px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+.nav-item:hover {
+  background: #f5f3ff;
+  color: #5b21b6;
+}
+
+.nav-item.active {
+  background: #5b21b6; /* Muted Violet Active */
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(91, 33, 182, 0.15);
+}
+
+.nav-item .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-item .label {
+  margin-left: 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid #f1f5f9;
+  min-width: 260px;
+}
+
+.user-profile-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  background: #5b21b6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  color: #1e293b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.user-role {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.logout-mini-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.logout-mini-btn:hover {
+  color: #ef4444;
+  background: #fef2f2;
+}
