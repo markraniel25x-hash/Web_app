@@ -1,0 +1,287 @@
+/* DetailedExpense.css — Same beautiful look and dark theme integration */
+
+.detailed-expense-container {
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* ==================== SEARCH & FILTERS BAR ==================== */
+.expense-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  padding: 16px 24px;
+  margin-bottom: 24px;
+  gap: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s;
+}
+
+/* Modal and Forms */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.expense-modal-content {
+  background: white;
+  border-radius: 20px;
+  width: 90vw;
+  max-width: 1100px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.expense-modal-header {
+  padding: 20px 24px;
+  border-b: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+}
+
+.expense-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+/* Grid & Table */
+.expense-table-wrapper {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow-x: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  margin-bottom: 24px;
+  position: relative;
+  max-height: 600px;
+}
+
+.expense-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.expense-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  padding: 14px 16px;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.expense-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+}
+
+/* Sticky columns */
+.expense-table td.sticky-col-num,
+.expense-table th.sticky-col-num {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 10;
+  width: 50px;
+  text-align: center;
+  border-right: 1px solid #e2e8f0;
+}
+
+.expense-table td.sticky-col-branch,
+.expense-table th.sticky-col-branch {
+  position: sticky;
+  left: 50px;
+  background: white;
+  z-index: 10;
+  min-width: 220px;
+  border-right: 1px solid #e2e8f0;
+  box-shadow: 4px 0 8px -4px rgba(0, 0, 0, 0.05);
+}
+
+.expense-table td.sticky-col-actions,
+.expense-table th.sticky-col-actions {
+  position: sticky;
+  right: 0;
+  background: white;
+  z-index: 10;
+  width: 90px;
+  text-align: center;
+  border-left: 1px solid #e2e8f0;
+  box-shadow: -4px 0 8px -4px rgba(0, 0, 0, 0.05);
+}
+
+/* Row states */
+.expense-row:hover td {
+  background-color: #f8fafc;
+}
+
+.expense-row.selected-row td {
+  background-color: #fff7ed !important;
+}
+
+/* Total cells */
+.total-cell-expense {
+  font-weight: 800;
+  color: #ea580c !important;
+  background-color: #f8fafc;
+}
+
+/* ==================== UNVERIFIED & SUMS SUMMARY ==================== */
+.expense-summary-strip {
+  display: flex;
+  gap: 24px;
+  background: #f8fafc;
+  padding: 12px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.expense-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expense-summary-item.unverified {
+  color: #ef4444;
+}
+
+.expense-summary-item.total {
+  color: #10b981;
+}
+
+/* ==================== BUTTON ACTIONS ==================== */
+.expense-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  border: 1px solid transparent;
+}
+
+.expense-btn-primary {
+  background: #ea580c;
+  color: white;
+}
+
+.expense-btn-primary:hover:not(:disabled) {
+  background: #c2410c;
+  transform: translateY(-1px);
+}
+
+.expense-btn-secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+.expense-btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ==================== DARK MODE COMPATIBILITY ==================== */
+body.dark-theme .expense-filter-bar {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .expense-table-wrapper {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .expense-table th {
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .expense-table td,
+body.dark-theme .expense-table td.sticky-col-num,
+body.dark-theme .expense-table td.sticky-col-branch,
+body.dark-theme .expense-table td.sticky-col-actions,
+body.dark-theme .expense-table th.sticky-col-num,
+body.dark-theme .expense-table th.sticky-col-branch,
+body.dark-theme .expense-table th.sticky-col-actions {
+  background-color: #1e293b !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .expense-table tr:hover td {
+  background-color: #334155 !important;
+}
+
+body.dark-theme .expense-row.selected-row td {
+  background-color: #451a03 !important;
+  color: #ffedd5 !important;
+}
+
+body.dark-theme .expense-modal-content {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .expense-modal-header {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .expense-summary-strip {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}

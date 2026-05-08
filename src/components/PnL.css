@@ -1,0 +1,285 @@
+/* PnL.css — Financial Tree Table & Summary styling with dark theme support */
+
+.pnl-container {
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Summary Grid Cards */
+.pnl-summary-grid {
+  display: grid;
+  grid-template-cols: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+  .pnl-summary-grid {
+    grid-template-cols: repeat(4, 1fr);
+  }
+}
+
+.pnl-stat-card {
+  background: white;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pnl-stat-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+}
+
+.pnl-stat-card-accent {
+  border-left: 4px solid #ea580c;
+}
+
+.pnl-stat-card-positive {
+  border-left: 4px solid #10b981;
+}
+
+.pnl-stat-card-negative {
+  border-left: 4px solid #ef4444;
+}
+
+/* Month selection pill list */
+.pnl-month-scroller {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0;
+  margin-bottom: 20px;
+  scrollbar-width: thin;
+}
+
+.pnl-month-scroller::-webkit-scrollbar {
+  height: 4px;
+}
+
+.pnl-month-scroller::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.pnl-month-pill {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+}
+
+.pnl-month-pill:hover {
+  border-color: #ea580c;
+  color: #ea580c;
+}
+
+.pnl-month-pill.active {
+  background: #ea580c;
+  color: white;
+  border-color: #ea580c;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+}
+
+/* Structured Financial Table */
+.pnl-table-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+  margin-bottom: 24px;
+}
+
+.pnl-table-wrapper {
+  overflow-x: auto;
+  max-height: 700px;
+}
+
+.pnl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.pnl-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 800;
+  padding: 14px 20px;
+  border-bottom: 2px solid #e2e8f0;
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.pnl-table td {
+  padding: 12px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+/* Structured Tree Rows Indents */
+.pnl-row-depth-0 {
+  background-color: #f8fafc;
+  font-weight: 800;
+}
+
+.pnl-row-depth-0 td {
+  color: #0f172a;
+  border-top: 2px solid #cbd5e1;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.pnl-row-depth-1 {
+  font-weight: 700;
+}
+
+.pnl-row-depth-1 td {
+  color: #1e293b;
+}
+
+.pnl-row-depth-2 td {
+  padding-left: 36px;
+  color: #334155;
+}
+
+.pnl-row-depth-3 td {
+  padding-left: 54px;
+  color: #475569;
+  font-style: italic;
+}
+
+/* Rollups Highlight */
+.pnl-row-rollup {
+  font-weight: 800;
+  background-color: #f1f5f9;
+}
+
+.pnl-row-rollup td {
+  color: #0f172a;
+}
+
+.pnl-row-grand-total {
+  background-color: #fff7ed;
+  font-weight: 900;
+}
+
+.pnl-row-grand-total td {
+  color: #ea580c;
+  border-top: 2px double #ea580c;
+  border-bottom: 2px double #ea580c;
+}
+
+/* Flex indent alignments */
+.pnl-desc-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pnl-expand-btn {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #94a3b8;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.pnl-expand-btn:hover {
+  color: #ea580c;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==================== DARK MODE COMPATIBILITY ==================== */
+body.dark-theme .pnl-stat-card {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .pnl-month-pill {
+  background-color: #1e293b !important;
+  color: #94a3b8 !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .pnl-month-pill:hover,
+body.dark-theme .pnl-month-pill.active {
+  background-color: #ea580c !important;
+  color: white !important;
+}
+
+body.dark-theme .pnl-table-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .pnl-table th {
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .pnl-table td {
+  color: #cbd5e1 !important;
+  border-bottom-color: #334155 !important;
+}
+
+body.dark-theme .pnl-row-depth-0 {
+  background-color: #0f172a !important;
+}
+
+body.dark-theme .pnl-row-depth-0 td {
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+body.dark-theme .pnl-row-depth-1 td {
+  color: #e2e8f0 !important;
+}
+
+body.dark-theme .pnl-row-rollup {
+  background-color: #0f172a !important;
+}
+
+body.dark-theme .pnl-row-rollup td {
+  color: #f8fafc !important;
+}
+
+body.dark-theme .pnl-row-grand-total {
+  background-color: #451a03 !important;
+}
+
+body.dark-theme .pnl-row-grand-total td {
+  color: #ffedd5 !important;
+  border-color: #ea580c !important;
+}

@@ -34,6 +34,91 @@ export default function DrivenFactor() {
   const isBM = user?.role === 'BM';
   const roleUpper = user?.role?.toUpperCase();
 
+  const getApprovalCounts = (row, stage) => {
+    let subBranches = [];
+    if (row.type === 'branch') {
+      subBranches = [row];
+    } else {
+      subBranches = branches.filter(b => {
+        if (row.type === 'area') return b.area === row.name;
+        if (row.type === 'region') return b.region === row.name;
+        if (row.type === 'division') return b.division === row.name;
+        if (row.type === 'operation') return b.group === row.name;
+        return false;
+      });
+      if (subBranches.length === 0 && row.type === 'admin') {
+        subBranches = branches;
+      }
+    }
+
+    if (subBranches.length === 0) {
+      return { branch: { approved: 0, total: 0 } };
+    }
+
+    const totalBranches = subBranches.length;
+    // Map 'admin' stage query to 'svp' approval cell since they share column 298
+    const queryStage = stage === 'admin' ? 'svp' : stage;
+    const approvedBranches = subBranches.filter(b => b.approvals?.[queryStage]).length;
+
+    const result = {
+      branch: { approved: approvedBranches, total: totalBranches }
+    };
+
+    // Calculate Area count
+    if (['region', 'division', 'operation', 'admin'].includes(row.type) || roleUpper === 'ADMIN') {
+      const grouped = {};
+      subBranches.forEach(b => {
+        if (!b.area) return;
+        if (!grouped[b.area]) grouped[b.area] = [];
+        grouped[b.area].push(b);
+      });
+      const totalAreas = Object.keys(grouped).length;
+      const approvedAreas = Object.values(grouped).filter(list => list.every(b => b.approvals?.[queryStage])).length;
+      result.area = { approved: approvedAreas, total: totalAreas };
+    }
+
+    // Calculate Region count
+    if (['division', 'operation', 'admin'].includes(row.type) || roleUpper === 'ADMIN') {
+      const grouped = {};
+      subBranches.forEach(b => {
+        if (!b.region) return;
+        if (!grouped[b.region]) grouped[b.region] = [];
+        grouped[b.region].push(b);
+      });
+      const totalRegions = Object.keys(grouped).length;
+      const approvedRegions = Object.values(grouped).filter(list => list.every(b => b.approvals?.[queryStage])).length;
+      result.region = { approved: approvedRegions, total: totalRegions };
+    }
+
+    // Calculate Division count
+    if (['operation', 'admin'].includes(row.type) || roleUpper === 'ADMIN') {
+      const grouped = {};
+      subBranches.forEach(b => {
+        if (!b.division) return;
+        if (!grouped[b.division]) grouped[b.division] = [];
+        grouped[b.division].push(b);
+      });
+      const totalDivisions = Object.keys(grouped).length;
+      const approvedDivisions = Object.values(grouped).filter(list => list.every(b => b.approvals?.[queryStage])).length;
+      result.division = { approved: approvedDivisions, total: totalDivisions };
+    }
+
+    // Calculate Operation/Group count
+    if (roleUpper === 'ADMIN' && (row.type === 'operation' || row.type === 'admin')) {
+      const grouped = {};
+      subBranches.forEach(b => {
+        if (!b.group) return;
+        if (!grouped[b.group]) grouped[b.group] = [];
+        grouped[b.group].push(b);
+      });
+      const totalOps = Object.keys(grouped).length;
+      const approvedOps = Object.values(grouped).filter(list => list.every(b => b.approvals?.[queryStage])).length;
+      result.operation = { approved: approvedOps, total: totalOps };
+    }
+
+    return result;
+  };
+
   // Selected Branch for Timeline on main page
   const [selectedBranchCode, setSelectedBranchCode] = useState(null);
 
@@ -53,13 +138,13 @@ export default function DrivenFactor() {
 
   // Dynamic available levels based on role
   const getAvailableAggregateLevels = () => {
-    if (isBM) return [];
-    if (roleUpper === 'AA') return [];
-    if (roleUpper === 'RA') return ['area', 'branch'];
-    if (roleUpper === 'AVP') return ['region', 'area', 'branch'];
-    if (roleUpper === 'SVP') return ['division', 'region', 'area', 'branch'];
-    if (roleUpper === 'ADMIN') return ['operation', 'division', 'region', 'area', 'branch'];
-    return [];
+    if (isBM) return ['branch'];
+    if (roleUpper === 'AA') return ['area', 'branch'];
+    if (roleUpper === 'RA') return ['region', 'area', 'branch'];
+    if (roleUpper === 'AVP') return ['division', 'region', 'area', 'branch'];
+    if (roleUpper === 'SVP') return ['operation', 'division', 'region', 'area', 'branch'];
+    if (roleUpper === 'ADMIN') return ['admin', 'operation', 'division', 'region', 'area', 'branch'];
+    return ['branch'];
   };
 
   const availableLevels = getAvailableAggregateLevels();
@@ -68,11 +153,12 @@ export default function DrivenFactor() {
   useEffect(() => {
     if (!user?.role) return;
     const r = user.role.toUpperCase();
-    if (r === 'BM' || r === 'AA') setAggregateLevel('branch');
-    else if (r === 'RA') setAggregateLevel('area');
-    else if (r === 'AVP') setAggregateLevel('region');
-    else if (r === 'SVP') setAggregateLevel('division');
-    else if (r === 'ADMIN') setAggregateLevel('operation');
+    if (r === 'BM') setAggregateLevel('branch');
+    else if (r === 'AA') setAggregateLevel('area');
+    else if (r === 'RA') setAggregateLevel('region');
+    else if (r === 'AVP') setAggregateLevel('division');
+    else if (r === 'SVP') setAggregateLevel('operation');
+    else if (r === 'ADMIN') setAggregateLevel('admin');
   }, [user]);
 
   // Auto-reset sub-filters when parent filters change
@@ -101,7 +187,7 @@ export default function DrivenFactor() {
           // Set selectedBranchCode if not yet set or not present in new list
           setSelectedBranchCode(prev => {
             if (prev && result.branches.some(b => b.code === prev)) return prev;
-            return result.branches[0].code;
+            return null; // Start with scope Overview representation
           });
         }
 
@@ -293,6 +379,54 @@ export default function DrivenFactor() {
       base = branches.filter(b => b.code.toLowerCase() === scopeBranchCode);
     }
 
+    if (displayLevel === 'admin') {
+      const companyRow = {
+        type: 'admin',
+        id: 'OVERVIEW',
+        code: 'OVERVIEW',
+        name: 'All Operations (Company Overview)',
+        branchesCount: base.length,
+        rawApprovals: { aa: [], ra: [], avp: [], svp: [], reopenRequested: [] },
+        metrics: {}
+      };
+      METRICS.forEach(m => {
+        companyRow.metrics[m.id] = {
+          targets: new Array(12).fill(0),
+          actuals: new Array(12).fill(0)
+        };
+      });
+
+      base.forEach(b => {
+        if (b.approvals) {
+          companyRow.rawApprovals.aa.push(b.approvals.aa);
+          companyRow.rawApprovals.ra.push(b.approvals.ra);
+          companyRow.rawApprovals.avp.push(b.approvals.avp);
+          companyRow.rawApprovals.svp.push(b.approvals.svp);
+          companyRow.rawApprovals.reopenRequested.push(b.approvals.reopenRequested);
+        }
+        METRICS.forEach(m => {
+          const bMetric = b.metrics[m.id];
+          if (bMetric) {
+            for (let i = 0; i < 12; i++) {
+              companyRow.metrics[m.id].targets[i] += parseFloat(bMetric.targets[i]) || 0;
+              companyRow.metrics[m.id].actuals[i] += parseFloat(bMetric.actuals[i]) || 0;
+            }
+          }
+        });
+      });
+
+      companyRow.approvals = {
+        aa: companyRow.rawApprovals.aa.every(Boolean) ? (companyRow.rawApprovals.aa[0] || "Approved") : "",
+        ra: companyRow.rawApprovals.ra.every(Boolean) ? (companyRow.rawApprovals.ra[0] || "Approved") : "",
+        avp: companyRow.rawApprovals.avp.every(Boolean) ? (companyRow.rawApprovals.avp[0] || "Approved") : "",
+        svp: companyRow.rawApprovals.svp.every(Boolean) ? (companyRow.rawApprovals.svp[0] || "Approved") : "",
+        reopenRequested: companyRow.rawApprovals.reopenRequested.some(Boolean) ? "Requested" : ""
+      };
+      delete companyRow.rawApprovals;
+
+      return [companyRow];
+    }
+
     if (displayLevel === 'branch') {
       // Filter branches standardly by selectors
       let filtered = base;
@@ -389,10 +523,240 @@ export default function DrivenFactor() {
     return Object.values(groups).sort((a, b) => a.name.localeCompare(b.name));
   };
 
+  const getOverviewNode = () => {
+    const role = roleUpper || 'BM';
+    const base = branches;
+    if (base.length === 0) return null;
+
+    let overviewType = 'admin';
+    let overviewName = 'All Operations';
+
+    if (role === 'BM') {
+      overviewType = 'branch';
+      overviewName = base[0].name;
+    } else if (role === 'AA') {
+      overviewType = 'area';
+      overviewName = base[0].area || 'My Area';
+    } else if (role === 'RA') {
+      overviewType = 'region';
+      overviewName = base[0].region || 'My Region';
+    } else if (role === 'AVP') {
+      overviewType = 'division';
+      overviewName = base[0].division || 'My Division';
+    } else if (role === 'SVP') {
+      overviewType = 'operation';
+      overviewName = base[0].group || 'My Operation';
+    }
+
+    const companyRow = {
+      type: overviewType,
+      id: 'OVERVIEW',
+      code: 'OVERVIEW',
+      name: overviewName,
+      branchesCount: base.length,
+      rawApprovals: { aa: [], ra: [], avp: [], svp: [], reopenRequested: [] },
+      metrics: {}
+    };
+
+    METRICS.forEach(m => {
+      companyRow.metrics[m.id] = {
+        targets: new Array(12).fill(0),
+        actuals: new Array(12).fill(0)
+      };
+    });
+
+    base.forEach(b => {
+      if (b.approvals) {
+        companyRow.rawApprovals.aa.push(b.approvals.aa);
+        companyRow.rawApprovals.ra.push(b.approvals.ra);
+        companyRow.rawApprovals.avp.push(b.approvals.avp);
+        companyRow.rawApprovals.svp.push(b.approvals.svp);
+        companyRow.rawApprovals.reopenRequested.push(b.approvals.reopenRequested);
+      }
+      METRICS.forEach(m => {
+        const bMetric = b.metrics[m.id];
+        if (bMetric) {
+          for (let i = 0; i < 12; i++) {
+            companyRow.metrics[m.id].targets[i] += parseFloat(bMetric.targets[i]) || 0;
+            companyRow.metrics[m.id].actuals[i] += parseFloat(bMetric.actuals[i]) || 0;
+          }
+        }
+      });
+    });
+
+    companyRow.approvals = {
+      aa: companyRow.rawApprovals.aa.every(Boolean) ? (companyRow.rawApprovals.aa[0] || "Approved") : "",
+      ra: companyRow.rawApprovals.ra.every(Boolean) ? (companyRow.rawApprovals.ra[0] || "Approved") : "",
+      avp: companyRow.rawApprovals.avp.every(Boolean) ? (companyRow.rawApprovals.avp[0] || "Approved") : "",
+      svp: companyRow.rawApprovals.svp.every(Boolean) ? (companyRow.rawApprovals.svp[0] || "Approved") : "",
+      reopenRequested: companyRow.rawApprovals.reopenRequested.some(Boolean) ? "Requested" : ""
+    };
+    delete companyRow.rawApprovals;
+
+    return companyRow;
+  };
+
   const gridRows = getAggregatedRows();
 
-  const selectedBranchObj = displayedBranches.find(b => b.code === selectedBranchCode) || displayedBranches[0];
+  const overviewObj = getOverviewNode();
+  const selectedBranchObj = selectedBranchCode 
+    ? (gridRows.find(r => r.code === selectedBranchCode) || overviewObj)
+    : overviewObj;
   const timelineApprovals = selectedBranchObj?.approvals || {};
+
+  const getStepStatus = (row, stage) => {
+    if (!row) return 'pending';
+    if (row.type === 'branch') {
+      const isApp = !!row.approvals?.[stage === 'admin' ? 'svp' : stage];
+      return isApp ? 'completed' : 'pending';
+    }
+    const counts = getApprovalCounts(row, stage);
+    const approvedB = counts.branch?.approved || 0;
+    const totalB = counts.branch?.total || 0;
+    if (totalB > 0 && approvedB === totalB) return 'completed';
+    if (approvedB > 0) return 'in-progress';
+    return 'pending';
+  };
+
+  const getTimelineStepStats = (row, stage) => {
+    if (!row) return { label: 'Br', approved: 0, total: 0 };
+
+    let subBranches = [];
+    if (row.type === 'branch') {
+      subBranches = [row];
+    } else {
+      subBranches = branches.filter(b => {
+        if (row.type === 'area') return b.area === row.name;
+        if (row.type === 'region') return b.region === row.name;
+        if (row.type === 'division') return b.division === row.name;
+        if (row.type === 'operation') return b.group === row.name;
+        return false;
+      });
+      if (subBranches.length === 0 && row.type === 'admin') {
+        subBranches = branches;
+      }
+    }
+
+    const totalBranches = subBranches.length;
+
+    if (stage === 'prep') {
+      return { label: 'Br', approved: totalBranches, total: totalBranches };
+    }
+
+    // Helper to group by a property and get approved/total counts
+    const getGroupedCounts = (prop, queryStage) => {
+      const grouped = {};
+      subBranches.forEach(b => {
+        const val = b[prop];
+        if (!val) return;
+        if (!grouped[val]) grouped[val] = [];
+        grouped[val].push(b);
+      });
+      const total = Object.keys(grouped).length;
+      const approved = Object.values(grouped).filter(list => list.every(b => b.approvals?.[queryStage])).length;
+      return { approved, total };
+    };
+
+    if (stage === 'aa') {
+      if (row.type === 'branch') {
+        return { label: 'Ar', approved: row.approvals?.aa ? 1 : 0, total: 1 };
+      }
+      if (row.type === 'area') {
+        return { label: 'Ar', approved: subBranches.every(b => b.approvals?.aa) ? 1 : 0, total: 1 };
+      }
+      const counts = getGroupedCounts('area', 'aa');
+      return { label: 'Ar', approved: counts.approved, total: counts.total };
+    }
+
+    if (stage === 'ra') {
+      if (row.type === 'branch') {
+        return { label: 'Re', approved: row.approvals?.ra ? 1 : 0, total: 1 };
+      }
+      if (row.type === 'area') {
+        return { label: 'Re', approved: subBranches.every(b => b.approvals?.ra) ? 1 : 0, total: 1 };
+      }
+      if (row.type === 'region') {
+        return { label: 'Re', approved: subBranches.every(b => b.approvals?.ra) ? 1 : 0, total: 1 };
+      }
+      const counts = getGroupedCounts('region', 'ra');
+      return { label: 'Re', approved: counts.approved, total: counts.total };
+    }
+
+    if (stage === 'avp') {
+      if (row.type === 'branch') {
+        return { label: 'Di', approved: row.approvals?.avp ? 1 : 0, total: 1 };
+      }
+      if (row.type === 'area') {
+        return { label: 'Di', approved: subBranches.every(b => b.approvals?.avp) ? 1 : 0, total: 1 };
+      }
+      if (row.type === 'region') {
+        return { label: 'Di', approved: subBranches.every(b => b.approvals?.avp) ? 1 : 0, total: 1 };
+      }
+      if (row.type === 'division') {
+        return { label: 'Di', approved: subBranches.every(b => b.approvals?.avp) ? 1 : 0, total: 1 };
+      }
+      const counts = getGroupedCounts('division', 'avp');
+      return { label: 'Di', approved: counts.approved, total: counts.total };
+    }
+
+    if (stage === 'svp') {
+      if (row.type === 'branch') {
+        return { label: 'Op', approved: row.approvals?.svp ? 1 : 0, total: 1 };
+      }
+      if (row.type === 'area') {
+        return { label: 'Op', approved: subBranches.every(b => b.approvals?.svp) ? 1 : 0, total: 1 };
+      }
+      if (row.type === 'region') {
+        return { label: 'Op', approved: subBranches.every(b => b.approvals?.svp) ? 1 : 0, total: 1 };
+      }
+      if (row.type === 'division') {
+        return { label: 'Op', approved: subBranches.every(b => b.approvals?.svp) ? 1 : 0, total: 1 };
+      }
+      if (row.type === 'operation') {
+        return { label: 'Op', approved: subBranches.every(b => b.approvals?.svp) ? 1 : 0, total: 1 };
+      }
+      const counts = getGroupedCounts('group', 'svp');
+      return { label: 'Op', approved: counts.approved, total: counts.total };
+    }
+
+    if (stage === 'admin') {
+      const isApp = subBranches.every(b => b.approvals?.svp);
+      return { label: 'Ad', approved: isApp ? 1 : 0, total: 1 };
+    }
+
+    return { label: 'Br', approved: 0, total: 0 };
+  };
+
+  const renderStepMeta = (row, stage) => {
+    if (!row) return <span className="text-slate-400 font-semibold text-[10px]">Pending</span>;
+
+    const stats = getTimelineStepStats(row, stage);
+    
+    let statusText = 'Pending';
+    let statusColor = 'text-slate-400';
+
+    if (stage === 'prep') {
+      statusText = 'BM Saved';
+      statusColor = 'text-emerald-600 font-semibold';
+    } else {
+      if (stats.total > 0 && stats.approved === stats.total) {
+        statusText = 'Approved';
+        statusColor = 'text-emerald-600 font-bold';
+      } else if (stats.approved > 0) {
+        statusText = 'In Progress';
+        statusColor = 'text-orange-500 font-bold';
+      }
+    }
+
+    return (
+      <div className="flex flex-col items-center gap-1 mt-0.5">
+        <span className={`${statusColor} text-[10px] uppercase font-bold tracking-wide`}>{statusText}</span>
+        <span className="text-slate-500 font-mono text-[9px] bg-slate-100 px-1.5 py-0.5 rounded-full border border-slate-200/60">
+          {stats.label}: {stats.approved}/{stats.total}
+        </span>
+      </div>
+    );
+  };
 
   // Check if supervisor's role is pending approval for the currently monitored branch
   const userRoleLower = user?.role?.toLowerCase();
@@ -637,7 +1001,7 @@ export default function DrivenFactor() {
       </div>
 
       {/* HIERARCHY SCOPE FILTER BAR */}
-      {!isBM && (showDivisionDropdown || showRegionDropdown || showAreaDropdown) && (
+      {!isBM && (
         <div className="hierarchy-filter-bar">
           <div className="filter-bar-title">
             <span className="filter-badge">Scope Filters</span>
@@ -655,7 +1019,8 @@ export default function DrivenFactor() {
                 >
                   {availableLevels.map(lvl => {
                     let label = lvl;
-                    if (lvl === 'operation') label = 'Operation (Group)';
+                    if (lvl === 'admin') label = 'Company Overview';
+                    else if (lvl === 'operation') label = 'Operation (Group)';
                     else if (lvl === 'division') label = 'Division';
                     else if (lvl === 'region') label = 'Region';
                     else if (lvl === 'area') label = 'Area';
@@ -733,35 +1098,63 @@ export default function DrivenFactor() {
       </div>
 
       {/* ────────────────── PROMINENT MAIN PAGE TIMELINE MONITOR ────────────────── */}
-      {selectedBranchObj && displayLevel === 'branch' && (
-        <div className="main-stepper-card">
-          <div className="main-stepper-header-row">
+      {selectedBranchObj && (
+        <div className="main-stepper-card bg-white rounded-xl shadow-md border border-slate-200/80 p-5 mb-6">
+          <div className="main-stepper-header-row flex flex-wrap justify-between items-center gap-4 mb-4">
             <div className="main-stepper-header-left">
-              <h4>Approval Progress Timeline</h4>
-              <span className="selected-branch-label">
-                Currently Monitoring: <strong>{selectedBranchObj.code} - {selectedBranchObj.name}</strong>
+              <div className="flex items-center gap-3">
+                <h4 className="text-sm font-bold tracking-wide uppercase text-slate-500">Approval Progress Timeline</h4>
+                {selectedBranchCode && (
+                  <button 
+                    onClick={() => setSelectedBranchCode(null)}
+                    className="px-2.5 py-1 text-[10px] font-extrabold text-orange-600 bg-orange-50 border border-orange-200 hover:bg-orange-100 rounded-lg transition-all cursor-pointer flex items-center gap-1"
+                    title="Return to showing your full supervising scope counts"
+                  >
+                    <RotateCcw size={10} /> Reset to Overview
+                  </button>
+                )}
+              </div>
+              <span className="selected-branch-label text-slate-800 text-lg font-bold flex items-center gap-2 mt-1">
+                {selectedBranchObj.type === 'branch' ? (
+                  <>📍 Branch: <span className="text-orange-600">{selectedBranchObj.code} - {selectedBranchObj.name}</span></>
+                ) : (
+                  <>
+                    {selectedBranchObj.type === 'admin' && '👑 '}
+                    {selectedBranchObj.type === 'operation' && '🌐 '}
+                    {selectedBranchObj.type === 'division' && '🏢 '}
+                    {selectedBranchObj.type === 'region' && '🗺️ '}
+                    {selectedBranchObj.type === 'area' && '📁 '}
+                    <span className="capitalize text-slate-700">
+                      {selectedBranchObj.type === 'admin' ? 'Company Overview' : selectedBranchObj.type}:
+                    </span>{' '}
+                    <span className="text-orange-600 font-extrabold">{selectedBranchObj.name}</span>
+                    <span className="text-xs bg-slate-100 text-slate-500 font-normal px-2 py-0.5 rounded-full ml-1">
+                      {selectedBranchObj.branchesCount} Branches Rollup
+                    </span>
+                  </>
+                )}
               </span>
             </div>
             
             {/* DIRECT ACTION BUTTON FOR SUPERVISOR TO APPROVE THE ENTIRE ROW */}
             {showDirectApproveBtn && (
-              <div className="approval-control-wrapper">
+              <div className="approval-control-wrapper flex items-center gap-3">
                 {/* Live progress indicator */}
-                <span className={`review-checklist-badge ${isReadyToApprove ? 'fully-reviewed' : !allMetricsReviewed ? 'pending-review' : 'invalid-targets'}`}>
+                <span className={`review-checklist-badge px-3 py-1.5 rounded-lg text-xs font-semibold ${isReadyToApprove ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : !allMetricsReviewed ? 'bg-slate-100 text-slate-500' : 'bg-red-50 text-red-700 border border-red-200'}`}>
                   {isReadyToApprove ? (
                     <>🎯 Ready to Approve ({reviewedCount}/{METRICS.length} KPIs + Targets Encoded)</>
                   ) : !allMetricsReviewed ? (
                     <>🔒 Review all metrics first ({reviewedCount}/{METRICS.length} KPIs)</>
                   ) : (
                     <>
-                      <AlertTriangle size={13} style={{ marginRight: '4px' }} />
+                      <AlertTriangle size={13} style={{ marginRight: '4px' }} className="inline" />
                       ⚠️ Encode Targets ({targetValidation.missingCount} months are blank/zero)
                     </>
                   )}
                 </span>
                 
                 <button 
-                  className={`direct-approve-badge-btn ${isReadyToApprove ? 'animate-pulse' : 'locked-btn'}`}
+                  className={`direct-approve-badge-btn px-4 py-2 rounded-lg text-sm font-bold flex items-center transition-all ${isReadyToApprove ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-md cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
                   onClick={handleDirectApprove}
                   disabled={approvingDirect || !isReadyToApprove}
                   title={isReadyToApprove ? 'Click to sign off and approve branch budget' : !allMetricsReviewed ? `Please click the Eye 👁️ icon for all ${METRICS.length} metrics to review before approving.` : `This branch has target cells that are blank or zero. All months must be encoded.`}
@@ -770,12 +1163,12 @@ export default function DrivenFactor() {
                     'Saving Approval...'
                   ) : isReadyToApprove ? (
                     <>
-                      <Check size={16} style={{ marginRight: '6px' }} />
+                      <Check size={16} className="mr-1.5" />
                       Approve Forecast Target
                     </>
                   ) : (
                     <>
-                      <Lock size={14} style={{ marginRight: '6px' }} />
+                      <Lock size={14} className="mr-1.5" />
                       Approve (Locked)
                     </>
                   )}
@@ -784,60 +1177,125 @@ export default function DrivenFactor() {
             )}
           </div>
 
-          <div className="modal-stepper-container" style={{ borderBottom: 'none' }}>
-            <div className="stepper-track-line"></div>
+          <div className="modal-stepper-container flex items-center justify-between relative py-2 select-none border-t border-slate-100 pt-6">
+            <div className="stepper-track-line absolute h-0.5 bg-slate-200 left-12 right-12 top-[44px] z-0"></div>
             
-            <div className="step-item completed">
-              <div className="step-badge">
-                <Check size={14} />
+            {/* STEP 1: PREPARATION */}
+            <div className="step-item completed flex flex-col items-center relative z-10 w-32 text-center">
+              <div className="step-badge w-8 h-8 rounded-full flex items-center justify-center bg-emerald-500 text-white shadow">
+                <Check size={16} />
               </div>
-              <div className="step-label">PREPARATION</div>
-              <div className="step-meta">BM Saved</div>
-            </div>
-
-            <div className={`step-item ${timelineApprovals.aa ? 'completed' : 'pending'}`}>
-              <div className="step-badge">
-                {timelineApprovals.aa ? <Check size={14} /> : <span className="dot"></span>}
-              </div>
-              <div className="step-label">AREA REVIEW</div>
-              <div className="step-meta" title={timelineApprovals.aa}>
-                {timelineApprovals.aa ? timelineApprovals.aa.split(' ')[0] : 'Pending'}
+              <div className="step-label text-xs font-bold text-slate-700 mt-2">PREPARATION</div>
+              <div className="step-meta text-[10px] text-slate-500 font-medium mt-0.5">
+                {renderStepMeta(selectedBranchObj, 'prep')}
               </div>
             </div>
 
-            <div className={`step-item ${timelineApprovals.ra ? 'completed' : 'pending'}`}>
-              <div className="step-badge">
-                {timelineApprovals.ra ? <Check size={14} /> : <span className="dot"></span>}
+            {/* STEP 2: AREA REVIEW */}
+            <div className={`step-item flex flex-col items-center relative z-10 w-32 text-center ${getStepStatus(selectedBranchObj, 'aa')}`}>
+              <div className={`step-badge w-8 h-8 rounded-full flex items-center justify-center shadow transition-all ${
+                getStepStatus(selectedBranchObj, 'aa') === 'completed' 
+                  ? 'bg-emerald-500 text-white' 
+                  : getStepStatus(selectedBranchObj, 'aa') === 'in-progress'
+                    ? 'bg-orange-400 text-white animate-pulse'
+                    : 'bg-slate-100 text-slate-400 border border-slate-200'
+              }`}>
+                {getStepStatus(selectedBranchObj, 'aa') === 'completed' ? (
+                  <Check size={16} />
+                ) : (
+                  <span className="w-2.5 h-2.5 bg-current rounded-full"></span>
+                )}
               </div>
-              <div className="step-label">REGIONAL REVIEW</div>
-              <div className="step-meta" title={timelineApprovals.ra}>
-                {timelineApprovals.ra ? timelineApprovals.ra.split(' ')[0] : 'Pending'}
+              <div className="step-label text-xs font-bold text-slate-700 mt-2">AREA REVIEW</div>
+              <div className="step-meta text-[10px] text-slate-500 font-semibold mt-0.5">
+                {renderStepMeta(selectedBranchObj, 'aa')}
               </div>
             </div>
 
-            <div className={`step-item ${timelineApprovals.avp ? 'completed' : 'pending'}`}>
-              <div className="step-badge">
-                {timelineApprovals.avp ? <Check size={14} /> : <span className="dot"></span>}
+            {/* STEP 3: REGIONAL REVIEW */}
+            <div className={`step-item flex flex-col items-center relative z-10 w-32 text-center ${getStepStatus(selectedBranchObj, 'ra')}`}>
+              <div className={`step-badge w-8 h-8 rounded-full flex items-center justify-center shadow transition-all ${
+                getStepStatus(selectedBranchObj, 'ra') === 'completed' 
+                  ? 'bg-emerald-500 text-white' 
+                  : getStepStatus(selectedBranchObj, 'ra') === 'in-progress'
+                    ? 'bg-orange-400 text-white animate-pulse'
+                    : 'bg-slate-100 text-slate-400 border border-slate-200'
+              }`}>
+                {getStepStatus(selectedBranchObj, 'ra') === 'completed' ? (
+                  <Check size={16} />
+                ) : (
+                  <span className="w-2.5 h-2.5 bg-current rounded-full"></span>
+                )}
               </div>
-              <div className="step-label">DIVISIONAL REVIEW</div>
-              <div className="step-meta" title={timelineApprovals.avp}>
-                {timelineApprovals.avp ? timelineApprovals.avp.split(' ')[0] : 'Pending'}
+              <div className="step-label text-xs font-bold text-slate-700 mt-2">REGIONAL REVIEW</div>
+              <div className="step-meta text-[10px] text-slate-500 font-semibold mt-0.5">
+                {renderStepMeta(selectedBranchObj, 'ra')}
               </div>
             </div>
 
-            <div className={`step-item ${timelineApprovals.svp ? 'completed' : 'pending'}`}>
-              <div className="step-badge">
-                {timelineApprovals.svp ? <Check size={14} /> : <span className="dot"></span>}
+            {/* STEP 4: DIVISIONAL REVIEW */}
+            <div className={`step-item flex flex-col items-center relative z-10 w-32 text-center ${getStepStatus(selectedBranchObj, 'avp')}`}>
+              <div className={`step-badge w-8 h-8 rounded-full flex items-center justify-center shadow transition-all ${
+                getStepStatus(selectedBranchObj, 'avp') === 'completed' 
+                  ? 'bg-emerald-500 text-white' 
+                  : getStepStatus(selectedBranchObj, 'avp') === 'in-progress'
+                    ? 'bg-orange-400 text-white animate-pulse'
+                    : 'bg-slate-100 text-slate-400 border border-slate-200'
+              }`}>
+                {getStepStatus(selectedBranchObj, 'avp') === 'completed' ? (
+                  <Check size={16} />
+                ) : (
+                  <span className="w-2.5 h-2.5 bg-current rounded-full"></span>
+                )}
               </div>
-              <div className="step-label">FINAL APPROVAL</div>
-              <div className="step-meta" title={timelineApprovals.svp}>
-                {timelineApprovals.svp ? timelineApprovals.svp.split(' ')[0] : 'Pending'}
+              <div className="step-label text-xs font-bold text-slate-700 mt-2">DIVISIONAL REVIEW</div>
+              <div className="step-meta text-[10px] text-slate-500 font-semibold mt-0.5">
+                {renderStepMeta(selectedBranchObj, 'avp')}
+              </div>
+            </div>
+
+            {/* STEP 5: FINAL APPROVAL */}
+            <div className={`step-item flex flex-col items-center relative z-10 w-32 text-center ${getStepStatus(selectedBranchObj, 'svp')}`}>
+              <div className={`step-badge w-8 h-8 rounded-full flex items-center justify-center shadow transition-all ${
+                getStepStatus(selectedBranchObj, 'svp') === 'completed' 
+                  ? 'bg-emerald-500 text-white' 
+                  : getStepStatus(selectedBranchObj, 'svp') === 'in-progress'
+                    ? 'bg-orange-400 text-white animate-pulse'
+                    : 'bg-slate-100 text-slate-400 border border-slate-200'
+              }`}>
+                {getStepStatus(selectedBranchObj, 'svp') === 'completed' ? (
+                  <Check size={16} />
+                ) : (
+                  <span className="w-2.5 h-2.5 bg-current rounded-full"></span>
+                )}
+              </div>
+              <div className="step-label text-xs font-bold text-slate-700 mt-2">FINAL APPROVAL</div>
+              <div className="step-meta text-[10px] text-slate-500 font-semibold mt-0.5">
+                {renderStepMeta(selectedBranchObj, 'svp')}
+              </div>
+            </div>
+
+            {/* STEP 6: ADMIN APPROVAL */}
+            <div className={`step-item flex flex-col items-center relative z-10 w-32 text-center ${getStepStatus(selectedBranchObj, 'admin')}`}>
+              <div className={`step-badge w-8 h-8 rounded-full flex items-center justify-center shadow transition-all ${
+                getStepStatus(selectedBranchObj, 'admin') === 'completed' 
+                  ? 'bg-emerald-500 text-white' 
+                  : getStepStatus(selectedBranchObj, 'admin') === 'in-progress'
+                    ? 'bg-orange-400 text-white animate-pulse'
+                    : 'bg-slate-100 text-slate-400 border border-slate-200'
+              }`}>
+                {getStepStatus(selectedBranchObj, 'admin') === 'completed' ? (
+                  <Check size={16} />
+                ) : (
+                  <span className="w-2.5 h-2.5 bg-current rounded-full"></span>
+                )}
+              </div>
+              <div className="step-label text-xs font-bold text-slate-700 mt-2">ADMIN APPROVAL</div>
+              <div className="step-meta text-[10px] text-slate-500 font-semibold mt-0.5">
+                {renderStepMeta(selectedBranchObj, 'admin')}
               </div>
             </div>
           </div>
-          {!isBM && (
-            <p className="stepper-tip-text">💡 Click anywhere on any branch row below to instantly switch the timeline monitor above.</p>
-          )}
         </div>
       )}
 
@@ -895,9 +1353,7 @@ export default function DrivenFactor() {
                       key={branch.id}
                       className={`branch-row-tr ${branch.type !== 'branch' ? 'aggregate-row' : ''} ${isSelected ? 'selected-row' : ''}`}
                       onClick={() => {
-                        if (branch.type === 'branch') {
-                          setSelectedBranchCode(branch.code);
-                        }
+                        setSelectedBranchCode(branch.code);
                       }}
                     >
                       {/* COLUMN 0: ROW COUNTER STICKY */}
@@ -907,43 +1363,23 @@ export default function DrivenFactor() {
 
                       {/* COLUMN 1: HIERARCHY INFO */}
                       <td className="sticky-col branch-title-cell">
-                        <div className="branch-meta-box">
+                        <div className="branch-meta-box flex flex-col gap-1.5 py-1">
                           {branch.type === 'branch' ? (
-                            <>
-                              <span className="branch-primary-title">
-                                {branch.code} - {branch.name}
-                                {isSelected && !isBM && <span className="active-monitor-badge">MONITORING</span>}
-                              </span>
-                              
-                              <div className="branch-approvals-row">
-                                <span className="approval-row-title">Approved by:</span>
-                                <span className={`app-row-badge ${app.aa ? 'done' : 'pending'}`} title={app.aa || 'Pending Area Review'}>
-                                  AA
-                                </span>
-                                <span className={`app-row-badge ${app.ra ? 'done' : 'pending'}`} title={app.ra || 'Pending Region Review'}>
-                                  RA
-                                </span>
-                                <span className={`app-row-badge ${app.avp ? 'done' : 'pending'}`} title={app.avp || 'Pending Division Review'}>
-                                  AVP
-                                </span>
-                                <span className={`app-row-badge ${app.svp ? 'done' : 'pending'}`} title={app.svp || 'Pending Final Operation Approval'}>
-                                  SVP
-                                </span>
-                              </div>
-                            </>
+                            <span className="branch-primary-title font-semibold text-slate-800">
+                              {branch.code} - {branch.name}
+                              {isSelected && !isBM && <span className="active-monitor-badge bg-orange-100 text-orange-700 ml-2 px-1.5 py-0.5 text-[9px] rounded font-bold uppercase tracking-wide">MONITORING</span>}
+                            </span>
                           ) : (
-                            <>
-                              <span className="branch-primary-title aggregate-rollup-title">
-                                {branch.type === 'operation' && '🌐 '}
-                                {branch.type === 'division' && '🏢 '}
-                                {branch.type === 'region' && '🗺️ '}
-                                {branch.type === 'area' && '📁 '}
-                                {branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}: {branch.name}
+                            <span className="branch-primary-title aggregate-rollup-title font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                              {branch.type === 'operation' && '🌐 '}
+                              {branch.type === 'division' && '🏢 '}
+                              {branch.type === 'region' && '🗺️ '}
+                              {branch.type === 'area' && '📁 '}
+                              {branch.type.charAt(0).toUpperCase() + branch.type.slice(1)}: {branch.name}
+                              <span className="text-[10px] bg-slate-100 text-slate-600 font-normal px-1.5 py-0.5 rounded-full ml-2">
+                                {branch.branchesCount} Branches Rollup
                               </span>
-                              <div className="branch-approvals-row">
-                                <span className="aggregate-count-tag">{branch.branchesCount} Branches Rollup</span>
-                              </div>
-                            </>
+                            </span>
                           )}
                         </div>
                       </td>

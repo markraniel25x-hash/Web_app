@@ -1,0 +1,280 @@
+/* Capex.css — Capital Expenditures Page Grid & Dashboard Styling */
+
+.capex-container {
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Header Action Layout */
+.capex-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Metric Cards Grid */
+.capex-grid-stats {
+  display: grid;
+  grid-template-cols: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+  .capex-grid-stats {
+    grid-template-cols: repeat(4, 1fr);
+  }
+}
+
+.capex-stat-card {
+  background: white;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-left: 4px solid #e2e8f0;
+}
+
+.capex-stat-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+}
+
+.capex-card-primary {
+  border-left-color: #ea580c;
+}
+
+.capex-card-success {
+  border-left-color: #10b981;
+}
+
+.capex-card-info {
+  border-left-color: #3b82f6;
+}
+
+.capex-card-warning {
+  border-left-color: #f59e0b;
+}
+
+/* Data Table Grid Card */
+.capex-table-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+  margin-bottom: 24px;
+}
+
+.capex-table-wrapper {
+  overflow-x: auto;
+}
+
+.capex-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 1200px;
+}
+
+.capex-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 800;
+  padding: 14px 16px;
+  border-bottom: 2px solid #e2e8f0;
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.capex-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-weight: 600;
+}
+
+.capex-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Status Badges */
+.capex-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.capex-status-verified {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.capex-status-pending {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+
+/* Table controls */
+.capex-actions-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.capex-verify-btn {
+  background: none;
+  border: none;
+  color: #10b981;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background-color 0.15s;
+}
+
+.capex-verify-btn:hover {
+  background-color: #ecfdf5;
+}
+
+.capex-delete-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background-color 0.15s;
+}
+
+.capex-delete-btn:hover {
+  background-color: #fef2f2;
+}
+
+/* Slide-over Form Container */
+.capex-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.capex-modal {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.capex-modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8fafc;
+}
+
+.capex-modal-body {
+  padding: 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.capex-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background-color: #f8fafc;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ==================== DARK MODE COMPATIBILITY ==================== */
+body.dark-theme .capex-stat-card {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .capex-table-card {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-theme .capex-table th {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-bottom-color: #334155 !important;
+}
+
+body.dark-theme .capex-table td {
+  color: #cbd5e1 !important;
+  border-bottom-color: #334155 !important;
+}
+
+body.dark-theme .capex-table tbody tr:hover {
+  background-color: #1e293b/40 !important;
+}
+
+body.dark-theme .capex-modal {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .capex-modal-header {
+  background-color: #0f172a !important;
+  border-bottom-color: #334155 !important;
+}
+
+body.dark-theme .capex-modal-footer {
+  background-color: #0f172a !important;
+  border-top-color: #334155 !important;
+}
+
+body.dark-theme .capex-status-verified {
+  background-color: #064e3b;
+  color: #a7f3d0;
+}
+
+body.dark-theme .capex-status-pending {
+  background-color: #7c2d12;
+  color: #ffedd5;
+}

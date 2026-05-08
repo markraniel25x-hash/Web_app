@@ -3,6 +3,12 @@ import { useAuth } from '../context/AuthContext';
 import { gasPost } from '../api/gasClient';
 import Sidebar from '../components/Sidebar';
 import DrivenFactor from '../components/DrivenFactor';
+import DetailedExpense from '../components/DetailedExpense';
+import PnL from '../components/PnL';
+import Capex from '../components/Capex';
+import Inventory from '../components/Inventory';
+import Manpower from '../components/Manpower';
+import './Dashboard.css';
 import { 
   Users, 
   Wallet, 
@@ -14,12 +20,11 @@ import {
   Menu,
   RotateCw,
   Bell,
-  Moon,
-  Sun
+  Sun,
+  Moon
 } from 'lucide-react';
-import './Dashboard.css';
 
-const CirclePesoSign = ({ size = 24, className }) => (
+const CirclePesoSign = ({ size = 20, className }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}
@@ -27,7 +32,7 @@ const CirclePesoSign = ({ size = 24, className }) => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="2"
+    strokeWidth="2.5"
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -45,24 +50,26 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dfData, setDfData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [viewMode, setViewMode] = useState('yearly'); // 'monthly' | 'yearly'
-  const [selectedMonth, setSelectedMonth] = useState(0); // 0-indexed month
 
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark';
   });
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     if (darkMode) {
-      document.documentElement.classList.add('dark-theme');
+      document.body.classList.add('dark-theme');
       localStorage.setItem('theme', 'dark');
     } else {
-      document.documentElement.classList.remove('dark-theme');
+      document.body.classList.remove('dark-theme');
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
+
+  const toggleDarkMode = () => setDarkMode(!darkMode);
+  const [viewMode, setViewMode] = useState('yearly'); // 'monthly' | 'yearly'
+  const [selectedMonth, setSelectedMonth] = useState(0); // 0-indexed month
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   const MONTHS_FULL = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -100,7 +107,6 @@ export default function Dashboard() {
             result.branches.forEach((b, idx) => {
               const app = b.approvals || {};
               if (roleUpper === 'BM') {
-                // BM sees notification if branch is approved by AA
                 if (app.aa) {
                   dynamicNotifs.push({
                     id: `aa-bm-${b.code}-${idx}`,
@@ -110,7 +116,6 @@ export default function Dashboard() {
                   });
                 }
               } else if (roleUpper === 'AA') {
-                // AA sees notification of Action of RA if related to their Area
                 if (app.ra) {
                   dynamicNotifs.push({
                     id: `ra-aa-${b.code}-${idx}`,
@@ -119,7 +124,6 @@ export default function Dashboard() {
                     unread: true
                   });
                 }
-                // AA sees notifications for BM re-open requests
                 if (app.reopenRequested) {
                   dynamicNotifs.push({
                     id: `reopen-req-aa-${b.code}-${idx}`,
@@ -129,7 +133,6 @@ export default function Dashboard() {
                   });
                 }
               } else if (roleUpper === 'RA') {
-                // RA sees notification of Action of AVP if related to their Region
                 if (app.avp) {
                   dynamicNotifs.push({
                     id: `avp-ra-${b.code}-${idx}`,
@@ -139,7 +142,6 @@ export default function Dashboard() {
                   });
                 }
               } else if (roleUpper === 'AVP') {
-                // AVP sees notification of Action of SVP if related to their Division
                 if (app.svp) {
                   dynamicNotifs.push({
                     id: `svp-avp-${b.code}-${idx}`,
@@ -151,7 +153,6 @@ export default function Dashboard() {
               }
             });
 
-            // Default notifications fallback if no approvals found
             if (dynamicNotifs.length === 0) {
               dynamicNotifs.push({
                 id: 'default-1',
@@ -186,13 +187,10 @@ export default function Dashboard() {
     if (viewMode === 'monthly') {
       return parseFloat(metric.targets?.[selectedMonth]) || 0;
     } else {
-      // Yearly View Mode
       if (metricId === 'clients' || metricId === 'savings' || metricId === 'portfolio') {
-        // Balance/Snapshot metrics: show latest active month value
         const latestIdx = getLatestActiveMonthIndex(dfData);
         return parseFloat(metric.targets?.[latestIdx]) || 0;
       } else {
-        // Flow/Income metrics: show yearly sum
         return (metric.targets || []).reduce((a, b) => a + (parseFloat(b) || 0), 0);
       }
     }
@@ -205,13 +203,10 @@ export default function Dashboard() {
     if (viewMode === 'monthly') {
       return parseFloat(metric.actuals?.[selectedMonth]) || 0;
     } else {
-      // Yearly View Mode
       if (metricId === 'clients' || metricId === 'savings' || metricId === 'portfolio') {
-        // Balance/Snapshot metrics: show latest active month value
         const latestIdx = getLatestActiveMonthIndex(dfData);
         return parseFloat(metric.actuals?.[latestIdx]) || 0;
       } else {
-        // Flow/Income metrics: show yearly sum
         return (metric.actuals || []).reduce((a, b) => a + (parseFloat(b) || 0), 0);
       }
     }
@@ -253,35 +248,42 @@ export default function Dashboard() {
   });
 
   const STAT_CARDS = [
-    { id: 'clients', label: getCardLabel('clients', 'Clients Forecast'), value: getMetricTotal('clients'), actual: getMetricActual('clients'), percent: getPercentage('clients'), icon: <Users size={24} />, color: '#7c3aed', target: 'driven-factor' },
-    { id: 'savings', label: getCardLabel('savings', 'Total Savings Target'), value: getMetricTotal('savings'), actual: getMetricActual('savings'), percent: getPercentage('savings'), icon: <Wallet size={24} />, color: '#10b981', target: 'driven-factor' },
-    { id: 'disbursement', label: getCardLabel('disbursement', 'Loan Disbursement'), value: getMetricTotal('disbursement'), actual: getMetricActual('disbursement'), percent: getPercentage('disbursement'), icon: <Coins size={24} />, color: '#f59e0b', target: 'driven-factor' },
-    { id: 'collection', label: getCardLabel('collection', 'Loan Collection'), value: getMetricTotal('collection'), actual: getMetricActual('collection'), percent: getPercentage('collection'), icon: <CirclePesoSign size={24} />, color: '#06b6d4', target: 'driven-factor' },
-    { id: 'portfolio', label: getCardLabel('portfolio', 'Loan Portfolio'), value: getMetricTotal('portfolio'), actual: getMetricActual('portfolio'), percent: getPercentage('portfolio'), icon: <Landmark size={24} />, color: '#ef4444', target: 'driven-factor' },
-    { id: 'gross_revenue', label: getCardLabel('gross_revenue', 'Gross Revenue'), value: getMetricTotal('gross_revenue'), actual: getMetricActual('gross_revenue'), percent: getPercentage('gross_revenue'), icon: <BarChart3 size={24} />, color: '#6366f1', target: 'driven-factor' },
-    { id: 'net_gross', label: getCardLabel('net_gross', 'Net Gross Revenue'), value: getMetricTotal('net_gross'), actual: getMetricActual('net_gross'), percent: getPercentage('net_gross'), icon: <TrendingUp size={24} />, color: '#8b5cf6', target: 'driven-factor' },
-    { id: 'rebates', label: getCardLabel('rebates', 'Rebates from Loan'), value: getMetricTotal('rebates'), actual: getMetricActual('rebates'), percent: getPercentage('rebates'), icon: <Percent size={24} />, color: '#ec4899', target: 'driven-factor' },
+    { id: 'clients', label: getCardLabel('clients', 'Clients Forecast'), value: getMetricTotal('clients'), actual: getMetricActual('clients'), percent: getPercentage('clients'), icon: <Users size={22} />, target: 'driven-factor' },
+    { id: 'savings', label: getCardLabel('savings', 'Total Savings Target'), value: getMetricTotal('savings'), actual: getMetricActual('savings'), percent: getPercentage('savings'), icon: <Wallet size={22} />, target: 'driven-factor' },
+    { id: 'disbursement', label: getCardLabel('disbursement', 'Loan Disbursement'), value: getMetricTotal('disbursement'), actual: getMetricActual('disbursement'), percent: getPercentage('disbursement'), icon: <Coins size={22} />, target: 'driven-factor' },
+    { id: 'collection', label: getCardLabel('collection', 'Loan Collection'), value: getMetricTotal('collection'), actual: getMetricActual('collection'), percent: getPercentage('collection'), icon: <CirclePesoSign size={20} />, target: 'driven-factor' },
+    { id: 'portfolio', label: getCardLabel('portfolio', 'Loan Portfolio'), value: getMetricTotal('portfolio'), actual: getMetricActual('portfolio'), percent: getPercentage('portfolio'), icon: <Landmark size={22} />, target: 'driven-factor' },
+    { id: 'gross_revenue', label: getCardLabel('gross_revenue', 'Gross Revenue'), value: getMetricTotal('gross_revenue'), actual: getMetricActual('gross_revenue'), percent: getPercentage('gross_revenue'), icon: <BarChart3 size={22} />, target: 'driven-factor' },
+    { id: 'net_gross', label: getCardLabel('net_gross', 'Net Gross Revenue'), value: getMetricTotal('net_gross'), actual: getMetricActual('net_gross'), percent: getPercentage('net_gross'), icon: <TrendingUp size={22} />, target: 'driven-factor' },
+    { id: 'rebates', label: getCardLabel('rebates', 'Rebates from Loan'), value: getMetricTotal('rebates'), actual: getMetricActual('rebates'), percent: getPercentage('rebates'), icon: <Percent size={22} />, target: 'driven-factor' },
   ];
 
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
         return (
-          <div className="dashboard-overview">
-            <div className="greeting-section-container">
-              <div className="greeting-section">
-                <h1>Good day, <span className="highlight-name">{user?.email.split('@')[0]}</span> 👋</h1>
-                <p className="scope-indicator">{user?.role} | {user?.scopeCode || 'National Access'}</p>
-                <p className="current-date">{today}</p>
+          <div className="flex flex-col gap-6 animate-fadeIn">
+            {/* Greeting card - White container background, orange branding, grey descriptions */}
+            <div className="flex flex-wrap items-center justify-between gap-4 p-6 bg-white rounded-2xl border border-slate-200/60 shadow-sm">
+              <div className="flex flex-col">
+                <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                  Good day, <span className="text-orange-500 capitalize">{user?.email.split('@')[0]}</span> 👋
+                </h1>
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-wider mt-1.5 flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 text-orange-600 border border-orange-100">{user?.role}</span>
+                  <span className="text-slate-300">|</span>
+                  <span className="text-slate-400 font-semibold">{user?.scopeCode || 'National Access'}</span>
+                </p>
+                <p className="text-slate-400 text-xs font-semibold mt-2">{today}</p>
               </div>
 
-              <div className="dashboard-controls-card">
-                <div className="control-field">
-                  <span className="control-label">View Period</span>
+              {/* View control selectors */}
+              <div className="flex gap-3 bg-slate-50 p-1.5 rounded-xl border border-slate-150">
+                <div className="flex flex-col">
                   <select 
                     value={viewMode} 
                     onChange={(e) => setViewMode(e.target.value)}
-                    className="premium-select"
+                    className="bg-white border border-slate-200 rounded-lg text-xs font-bold px-3 py-2 text-slate-700 outline-none focus:border-orange-500 cursor-pointer"
                   >
                     <option value="yearly">Yearly Summary</option>
                     <option value="monthly">Monthly Breakdowns</option>
@@ -289,12 +291,11 @@ export default function Dashboard() {
                 </div>
 
                 {viewMode === 'monthly' && (
-                  <div className="control-field">
-                    <span className="control-label">Select Month</span>
+                  <div className="flex flex-col">
                     <select 
                       value={selectedMonth} 
                       onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                      className="premium-select month-select"
+                      className="bg-white border border-slate-200 rounded-lg text-xs font-bold px-3 py-2 text-slate-700 outline-none focus:border-orange-500 cursor-pointer"
                     >
                       {MONTHS_FULL.map((m, idx) => (
                         <option key={m} value={idx}>{m}</option>
@@ -305,59 +306,78 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="stat-cards-container">
+            {/* Stat metric grids Redesigned to 60/30/10 light mode style */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {STAT_CARDS.map((card) => (
                 <div 
                   key={card.id} 
-                  className="stat-card-premium" 
-                  style={{ '--card-color': card.color, cursor: 'pointer' }}
+                  className="bg-white hover:bg-slate-50/40 rounded-2xl border border-slate-200/80 p-5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group relative overflow-hidden cursor-pointer active:scale-[0.99]" 
                   onClick={() => setActiveTab(card.target)}
                 >
-                  <div className="card-icon">{card.icon}</div>
-                  <div className="card-main-info">
-                    <div className="card-value">{loading ? '...' : card.actual}</div>
-                    <div className="card-label">{card.label}</div>
-                  </div>
-                  
-                  <div className="card-secondary-info">
-                    <div className="actual-box">
-                      <span className="sub-label">TARGET:</span>
-                      <span className="sub-value">{card.value}</span>
+                  <div className="flex justify-between items-start">
+                    <div className="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center shadow-md shadow-orange-500/10 group-hover:scale-105 transition-transform">
+                      {card.icon}
                     </div>
-                    <div className="percent-badge" style={{ backgroundColor: card.color + '15', color: card.color }}>
+                    <div className="bg-orange-50 text-orange-600 font-extrabold text-[10px] tracking-wider uppercase px-2 py-1 rounded-lg border border-orange-100">
                       {card.percent} Reach
                     </div>
                   </div>
                   
-                  <div className="card-bg-circle"></div>
+                  <div className="mt-5 flex flex-col">
+                    <span className="text-2xl font-black text-slate-800 tracking-tight leading-none">
+                      {loading ? '...' : card.actual}
+                    </span>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-2 group-hover:text-slate-600 transition-colors">
+                      {card.label}
+                    </span>
+                  </div>
+                  
+                  <div className="mt-4 border-t border-dashed border-slate-100 pt-3 flex justify-between items-center text-[10px] font-bold text-slate-400">
+                    <span>TARGET:</span>
+                    <span className="text-slate-600 font-mono text-xs">{card.value}</span>
+                  </div>
+                  
+                  {/* Subtle hover background highlight bubble */}
+                  <div className="absolute right-0 bottom-0 w-24 h-24 bg-gradient-to-br from-orange-500/5 to-transparent rounded-full translate-x-8 translate-y-8 group-hover:scale-110 transition-transform"></div>
                 </div>
               ))}
             </div>
 
-            <div className="announcements-section">
-              <div className="section-card">
-                <h3>Recent Announcements</h3>
-                <div className="empty-state">
-                  <p>No announcements yet.</p>
-                </div>
+            {/* Announcements Segment */}
+            <div className="p-5 bg-white rounded-2xl border border-slate-200/60 shadow-sm">
+              <h3 className="text-sm font-extrabold text-slate-700 uppercase tracking-widest border-b border-slate-100 pb-3 mb-4">
+                Recent Announcements
+              </h3>
+              <div className="py-6 text-center text-slate-400 text-xs font-bold bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                📢 No announcements posted at this time.
               </div>
             </div>
           </div>
         );
       case 'driven-factor':
         return <DrivenFactor />;
+      case 'detailed-expense':
+        return <DetailedExpense />;
+      case 'pnl':
+        return <PnL />;
+      case 'capex':
+        return <Capex />;
+      case 'inventory':
+        return <Inventory />;
+      case 'manpower':
+        return <Manpower />;
       default:
         return (
-          <div className="placeholder-content">
-            <h2>{activeTab.replace('-', ' ').toUpperCase()}</h2>
-            <p>This module is currently being optimized. Please check back later.</p>
+          <div className="p-8 text-center bg-white border border-slate-200 rounded-2xl animate-fadeIn">
+            <h2 className="text-lg font-black text-slate-800 capitalize mb-1">{activeTab.replace('-', ' ')}</h2>
+            <p className="text-sm text-slate-500 font-medium">This module is currently undergoing system tuning. Please check back shortly.</p>
           </div>
         );
     }
   };
 
   return (
-    <div className="dashboard-layout">
+    <div className="flex bg-slate-50 min-h-screen text-slate-800 font-sans">
       <Sidebar 
         collapsed={collapsed} 
         activeTab={activeTab} 
@@ -366,63 +386,68 @@ export default function Dashboard() {
         logout={logout}
       />
       
-      <main className="main-content">
-        <header className="top-navbar">
-          <div className="breadcrumb-box">
-            <button className="menu-toggle-btn" onClick={() => setCollapsed(!collapsed)}>
-              <Menu size={20} />
+      <main className="flex-1 min-w-0 flex flex-col">
+        {/* Dynamic Nav-header with White-Orange focus guidelines */}
+        <header className="h-16 sticky top-0 bg-white/90 backdrop-blur border-b border-slate-200/80 px-6 flex items-center justify-between z-40 shadow-sm">
+          <div className="flex items-center gap-4">
+            <button 
+              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600 hover:text-slate-900 transition-colors cursor-pointer" 
+              onClick={() => setCollapsed(!collapsed)}
+            >
+              <Menu size={18} />
             </button>
-            <div className="breadcrumb">
-              <span className="breadcrumb-root">Dashboard</span>
-              {activeTab !== 'dashboard' && (
-                <>
-                  <span className="separator">/</span>
-                  <span className="breadcrumb-current">{activeTab.replace('-', ' ')}</span>
-                </>
-              )}
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
+              <span className="text-slate-600">ASA Philippines</span>
+              <span>/</span>
+              <span className="text-orange-500 uppercase tracking-wider font-extrabold">{activeTab.replace('-', ' ')}</span>
             </div>
           </div>
 
-          <div className="top-actions">
-            {/* Dark Mode Toggle */}
+          <div className="flex items-center gap-4">
+            {/* Dynamic Light/Dark Mode Switcher */}
             <button 
-              className="icon-action-btn theme-toggle" 
-              title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"} 
-              onClick={() => setDarkMode(!darkMode)}
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-colors cursor-pointer" 
+              onClick={toggleDarkMode}
+              title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
-              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+              {darkMode ? (
+                <Sun size={15} className="text-amber-500 animate-pulse" />
+              ) : (
+                <Moon size={15} className="text-slate-500" />
+              )}
             </button>
 
-            {/* Notification Bell */}
-            <div className="notification-bell-container">
+            {/* Notification Bell with Dropdown */}
+            <div className="relative">
               <button 
-                className="icon-action-btn bell-btn" 
-                title="Notifications" 
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-colors relative cursor-pointer" 
                 onClick={() => setShowNotifications(!showNotifications)}
               >
-                <Bell size={18} />
-                {notifications.some(n => n.unread) && <span className="notification-badge"></span>}
+                <Bell size={16} />
+                {notifications.some(n => n.unread) && (
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-white"></span>
+                )}
               </button>
 
               {showNotifications && (
-                <div className="notifications-dropdown">
-                  <div className="dropdown-header">
-                    <h4>Notifications</h4>
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-slate-200 z-50 py-1 overflow-hidden">
+                  <div className="px-4 py-3 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
+                    <h4 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Notifications</h4>
                     <button 
-                      className="clear-unread-btn"
+                      className="text-[10px] font-extrabold text-orange-500 hover:text-orange-600 tracking-wide uppercase cursor-pointer"
                       onClick={() => setNotifications(notifications.map(n => ({ ...n, unread: false })))}
                     >
-                      Mark all as read
+                      Mark read
                     </button>
                   </div>
-                  <div className="dropdown-body">
+                  <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
                     {notifications.length === 0 ? (
-                      <p className="no-notifications">No new notifications</p>
+                      <p className="p-4 text-center text-xs text-slate-400 font-bold">No active notifications</p>
                     ) : (
                       notifications.map(n => (
-                        <div key={n.id} className={`notification-item ${n.unread ? 'unread' : ''}`}>
-                          <p className="notif-text">{n.text}</p>
-                          <span className="notif-time">{n.time}</span>
+                        <div key={n.id} className={`p-4 hover:bg-slate-50 flex flex-col gap-1 ${n.unread ? 'bg-orange-500/5' : ''}`}>
+                          <p className="text-xs font-semibold text-slate-700 leading-relaxed">{n.text}</p>
+                          <span className="text-[9px] font-bold text-slate-400">{n.time}</span>
                         </div>
                       ))
                     )}
@@ -431,17 +456,24 @@ export default function Dashboard() {
               )}
             </div>
 
-            {/* Refresh Button */}
-            <button className="icon-action-btn" title="Refresh" onClick={() => window.location.reload()}>
-              <RotateCw size={18} />
+            {/* Refresh App */}
+            <button 
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-colors cursor-pointer" 
+              title="Refresh Portal" 
+              onClick={() => window.location.reload()}
+            >
+              <RotateCw size={15} />
             </button>
-            <div className="user-email-pill">
+
+            {/* Profile email banner */}
+            <div className="bg-slate-100 border border-slate-200 text-slate-600 text-xs font-extrabold px-3 py-1.5 rounded-xl font-mono select-none">
               {user?.email}
             </div>
           </div>
         </header>
 
-        <section className="content-viewport">
+        {/* Scrolling page viewport wrapper */}
+        <section className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
           {renderContent()}
         </section>
       </main>
