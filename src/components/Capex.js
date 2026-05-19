@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
@@ -10,7 +12,6 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { gasPost, gasGet } from '../api/gasClient';
-import './Capex.css';
 
 const INITIAL_CAPEX_DATA = [
   {
@@ -223,7 +224,7 @@ export default function Capex() {
           
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md cursor-pointer transition-all"
+            className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md cursor-pointer transition-all"
           >
             <Plus size={14} /> New CAPEX Request
           </button>
@@ -282,7 +283,7 @@ export default function Capex() {
             placeholder="Search particulars, planning staff, ID number..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold outline-none focus:border-orange-500 dark:bg-slate-800 dark:border-slate-700"
+            className="w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold outline-none focus:border-sky-500 dark:bg-slate-800 dark:border-slate-700"
           />
         </div>
         <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
@@ -336,7 +337,7 @@ export default function Capex() {
                     <td>{row.staffName}</td>
                     <td className="font-mono text-xs font-bold text-slate-400">{row.idNumber}</td>
                     <td>
-                      <span className="font-extrabold text-xs text-orange-600">{row.designation}</span>
+                      <span className="font-extrabold text-xs text-sky-600">{row.designation}</span>
                     </td>
                     <td className="text-xs font-black text-slate-700 dark:text-slate-300">{row.month}</td>
                     <td className="text-center">{row.qty}</td>
@@ -411,7 +412,7 @@ export default function Capex() {
                       value={formData.particulars}
                       onChange={(e) => setFormData({ ...formData, particulars: e.target.value })}
                       placeholder="e.g. Printer, Vault"
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     />
                   </div>
 
@@ -420,7 +421,7 @@ export default function Capex() {
                     <select 
                       value={formData.subAccount}
                       onChange={(e) => setFormData({ ...formData, subAccount: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     >
                       <option value="Office Equipment (Laptop)">Office Equipment (Laptop)</option>
                       <option value="Transportation Equipment (Motorcycle)">Transportation Equipment (Motorcycle)</option>
@@ -436,7 +437,7 @@ export default function Capex() {
                     <select 
                       value={formData.typeOfPurchase}
                       onChange={(e) => setFormData({ ...formData, typeOfPurchase: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     >
                       <option value="Renewal">Renewal</option>
                       <option value="First-time">First-time</option>
@@ -450,7 +451,7 @@ export default function Capex() {
                       value={formData.lastPurchased}
                       onChange={(e) => setFormData({ ...formData, lastPurchased: e.target.value })}
                       placeholder="e.g. 2019 or —"
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     />
                   </div>
                 </div>
@@ -464,7 +465,7 @@ export default function Capex() {
                       value={formData.staffName}
                       onChange={(e) => setFormData({ ...formData, staffName: e.target.value })}
                       placeholder="e.g. Dela Cruz, Juan A."
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     />
                   </div>
 
@@ -477,7 +478,7 @@ export default function Capex() {
                       value={formData.idNumber}
                       onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
                       placeholder="12345"
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     />
                   </div>
                 </div>
@@ -488,7 +489,7 @@ export default function Capex() {
                     <select 
                       value={formData.designation}
                       onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     >
                       <option value="BH">BH</option>
                       <option value="ABH">ABH</option>
@@ -501,7 +502,7 @@ export default function Capex() {
                     <select 
                       value={formData.month}
                       onChange={(e) => setFormData({ ...formData, month: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     >
                       {Object.keys(MONTHS_REMAINING_LOOKUP).map(m => (
                         <option key={m} value={m}>{m}</option>
@@ -517,7 +518,7 @@ export default function Capex() {
                       min={1}
                       value={formData.usefulLife}
                       onChange={(e) => setFormData({ ...formData, usefulLife: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     />
                   </div>
                 </div>
@@ -531,7 +532,7 @@ export default function Capex() {
                       min={1}
                       value={formData.qty}
                       onChange={(e) => setFormData({ ...formData, qty: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     />
                   </div>
 
@@ -542,7 +543,7 @@ export default function Capex() {
                       required 
                       value={formData.unitCost}
                       onChange={(e) => setFormData({ ...formData, unitCost: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="capex-input"
                     />
                   </div>
                 </div>
@@ -559,7 +560,7 @@ export default function Capex() {
                 </button>
                 <button 
                   type="submit"
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-md"
+                  className="bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-md"
                 >
                   Submit Request
                 </button>

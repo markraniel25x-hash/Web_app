@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { gasPost } from '../api/gasClient';
@@ -18,7 +20,6 @@ import {
   ChevronDown,
   Info
 } from 'lucide-react';
-import './DetailedExpense.css';
 
 // 61 Expense particulars template with real spreadsheet values
 const EXPENSE_ROWS_TEMPLATE = [
@@ -337,10 +338,10 @@ export default function DetailedExpense() {
       <div className="main-stepper-card p-6 bg-white border border-slate-200/80 rounded-2xl mb-8 shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse"></span>
             <h3 className="text-sm font-black text-slate-800 tracking-tight">DETAILED EXPENSE APPROVAL PROGRESS</h3>
           </div>
-          <span className="bg-orange-50 text-orange-600 font-extrabold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-lg border border-orange-100">
+          <span className="bg-sky-50 text-sky-600 font-extrabold text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-lg border border-sky-100">
             {totalBranchesCount} Branches Scope
           </span>
         </div>
@@ -349,57 +350,57 @@ export default function DetailedExpense() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 relative">
           
           <div className="flex flex-col items-center text-center p-3 rounded-xl bg-slate-50/50 border border-slate-100">
-            <div className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-xs mb-2 shadow-md shadow-orange-500/20">
+            <div className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs mb-2 shadow-md shadow-sky-500/20">
               BM
             </div>
             <span className="text-[11px] font-bold text-slate-700">PREPARATION</span>
             <span className="text-[10px] font-bold text-slate-400 uppercase mt-1">BM SAVED</span>
-            <span className="text-[10px] font-black text-orange-600 mt-0.5">{bmSavedCount} / {totalBranchesCount}</span>
+            <span className="text-[10px] font-black text-sky-600 mt-0.5">{bmSavedCount} / {totalBranchesCount}</span>
           </div>
 
           <div className="flex flex-col items-center text-center p-3 rounded-xl bg-slate-50/50 border border-slate-100">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-2 ${aaReviewCount > 0 ? 'bg-orange-500 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-2 ${aaReviewCount > 0 ? 'bg-sky-500 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>
               AA
             </div>
             <span className="text-[11px] font-bold text-slate-700">AREA REVIEW</span>
             <span className="text-[10px] font-bold text-slate-400 uppercase mt-1">PENDING</span>
-            <span className="text-[10px] font-black text-orange-600 mt-0.5">{aaReviewCount} / {totalBranchesCount}</span>
+            <span className="text-[10px] font-black text-sky-600 mt-0.5">{aaReviewCount} / {totalBranchesCount}</span>
           </div>
 
           <div className="flex flex-col items-center text-center p-3 rounded-xl bg-slate-50/50 border border-slate-100">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-2 ${raReviewCount > 0 ? 'bg-orange-500 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-2 ${raReviewCount > 0 ? 'bg-sky-500 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>
               RA
             </div>
             <span className="text-[11px] font-bold text-slate-700">REGIONAL REVIEW</span>
             <span className="text-[10px] font-bold text-slate-400 uppercase mt-1">PENDING</span>
-            <span className="text-[10px] font-black text-orange-600 mt-0.5">{raReviewCount} / {totalBranchesCount}</span>
+            <span className="text-[10px] font-black text-sky-600 mt-0.5">{raReviewCount} / {totalBranchesCount}</span>
           </div>
 
           <div className="flex flex-col items-center text-center p-3 rounded-xl bg-slate-50/50 border border-slate-100">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-2 ${avpReviewCount > 0 ? 'bg-orange-500 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-2 ${avpReviewCount > 0 ? 'bg-sky-500 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>
               AVP
             </div>
             <span className="text-[11px] font-bold text-slate-700">DIVISIONAL REVIEW</span>
             <span className="text-[10px] font-bold text-slate-400 uppercase mt-1">PENDING</span>
-            <span className="text-[10px] font-black text-orange-600 mt-0.5">{avpReviewCount} / {totalBranchesCount}</span>
+            <span className="text-[10px] font-black text-sky-600 mt-0.5">{avpReviewCount} / {totalBranchesCount}</span>
           </div>
 
           <div className="flex flex-col items-center text-center p-3 rounded-xl bg-slate-50/50 border border-slate-100">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-2 ${svpReviewCount > 0 ? 'bg-orange-500 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-2 ${svpReviewCount > 0 ? 'bg-sky-500 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>
               SVP
             </div>
             <span className="text-[11px] font-bold text-slate-700">FINAL APPROVAL</span>
             <span className="text-[10px] font-bold text-slate-400 uppercase mt-1">PENDING</span>
-            <span className="text-[10px] font-black text-orange-600 mt-0.5">{svpReviewCount} / {totalBranchesCount}</span>
+            <span className="text-[10px] font-black text-sky-600 mt-0.5">{svpReviewCount} / {totalBranchesCount}</span>
           </div>
 
           <div className="flex flex-col items-center text-center p-3 rounded-xl bg-slate-50/50 border border-slate-100">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-2 ${adminReviewCount > 0 ? 'bg-orange-500 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs mb-2 ${adminReviewCount > 0 ? 'bg-sky-500 text-white shadow-md' : 'bg-slate-200 text-slate-500'}`}>
               AD
             </div>
             <span className="text-[11px] font-bold text-slate-700">ADMIN REVIEW</span>
             <span className="text-[10px] font-bold text-slate-400 uppercase mt-1">TOTAL</span>
-            <span className="text-[10px] font-black text-orange-600 mt-0.5">{adminReviewCount} / {totalBranchesCount}</span>
+            <span className="text-[10px] font-black text-sky-600 mt-0.5">{adminReviewCount} / {totalBranchesCount}</span>
           </div>
 
         </div>
@@ -416,7 +417,7 @@ export default function DetailedExpense() {
             placeholder="Search branch code or name..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold outline-none focus:border-orange-500 dark:bg-slate-800 dark:border-slate-700"
+            className="w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold outline-none focus:border-sky-500 dark:bg-slate-800 dark:border-slate-700"
           />
         </div>
 
@@ -426,7 +427,7 @@ export default function DetailedExpense() {
             <select 
               value={viewLevel} 
               onChange={(e) => setViewLevel(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold px-3 py-2 text-slate-700 outline-none cursor-pointer focus:border-orange-500 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300"
+              className="bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold px-3 py-2 text-slate-700 outline-none cursor-pointer focus:border-sky-500 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300"
             >
               <option value="Branch">View Level: Branch</option>
               <option value="Area">View Level: Area Rollup</option>
@@ -437,7 +438,7 @@ export default function DetailedExpense() {
             <select 
               value={selectedArea} 
               onChange={(e) => setSelectedArea(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold px-3 py-2 text-slate-700 outline-none cursor-pointer focus:border-orange-500 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300"
+              className="bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold px-3 py-2 text-slate-700 outline-none cursor-pointer focus:border-sky-500 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300"
             >
               {uniqueAreas.map(a => (
                 <option key={a} value={a}>{a}</option>
@@ -491,14 +492,14 @@ export default function DetailedExpense() {
                 <td>₱{getSubAccountAggregate(b.items, 'Meetings').toLocaleString()}</td>
                 <td>₱{getSubAccountAggregate(b.items, 'Licenses and Permits').toLocaleString()}</td>
                 <td>₱{getSubAccountAggregate(b.items, 'Janitorial and housekeeping services').toLocaleString()}</td>
-                <td className="font-black text-orange-600">₱{(b.totalBudget || 0).toLocaleString()}</td>
+                <td className="font-black text-sky-600">₱{(b.totalBudget || 0).toLocaleString()}</td>
                 <td className="sticky-col-actions">
                   <div className="flex justify-center gap-1.5">
                     
                     {/* View details eye button */}
                     <button 
                       onClick={() => handleEditClick(b)}
-                      className="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-50 border border-slate-200 text-slate-600 hover:text-orange-500 hover:bg-orange-50 hover:border-orange-200 cursor-pointer dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300"
+                      className="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-50 border border-slate-200 text-slate-600 hover:text-sky-500 hover:bg-sky-50 hover:border-sky-200 cursor-pointer dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300"
                       title="Inspect particulars line items"
                     >
                       <Eye size={13} />
@@ -625,7 +626,7 @@ export default function DetailedExpense() {
                           value={row.month} 
                           disabled={user?.role !== 'bm'}
                           onChange={(e) => handleRowMonthChange(idx, e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded px-1 py-1 text-xs font-bold outline-none cursor-pointer focus:border-orange-500 disabled:opacity-80 dark:bg-slate-800 dark:border-slate-700"
+                          className="w-full bg-slate-50 border border-slate-200 rounded px-1 py-1 text-xs font-bold outline-none cursor-pointer focus:border-sky-500 disabled:opacity-80 dark:bg-slate-800 dark:border-slate-700"
                         >
                           <option value="">(None)</option>
                           <option value="Monthly">Monthly</option>
@@ -649,7 +650,7 @@ export default function DetailedExpense() {
                           value={row.amount} 
                           disabled={user?.role !== 'bm'}
                           onChange={(e) => handleRowAmountChange(idx, e.target.value)}
-                          className="w-full text-right bg-slate-50 border border-slate-200 rounded px-1.5 py-1 text-xs font-bold outline-none focus:border-orange-500 disabled:opacity-80 dark:bg-slate-800 dark:border-slate-700"
+                          className="w-full text-right bg-slate-50 border border-slate-200 rounded px-1.5 py-1 text-xs font-bold outline-none focus:border-sky-500 disabled:opacity-80 dark:bg-slate-800 dark:border-slate-700"
                         />
                       </td>
                       <td className="text-right font-black text-slate-700 dark:text-slate-300">

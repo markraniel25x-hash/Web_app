@@ -278,3 +278,58 @@ body.dark-theme .capex-status-pending {
   background-color: #7c2d12;
   color: #ffedd5;
 }
+
+/* ==================== PREMIUM INPUTS & CHANNELS (60/30/10 RULE) ==================== */
+.capex-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.capex-input::placeholder {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.capex-input:hover {
+  border-color: #cbd5e1;
+  background-color: #f8fafc !important;
+}
+
+.capex-input:focus {
+  border-color: #ea580c !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Dark theme overrides for capex-input */
+body.dark-theme .capex-input {
+  border-color: #334155 !important;
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  box-shadow: none !important;
+}
+
+body.dark-theme .capex-input::placeholder {
+  color: #64748b;
+}
+
+body.dark-theme .capex-input:hover {
+  border-color: #475569 !important;
+  background-color: #111827 !important;
+}
+
+body.dark-theme .capex-input:focus {
+  border-color: #f97316 !important;
+  background-color: #0f172a !important;
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2) !important;
+}
+

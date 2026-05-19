@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { 
   TrendingUp, 
@@ -12,7 +14,6 @@ import {
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
-import './PnL.css';
 
 // Continuous template of P&L Account lines
 const INITIAL_PNL_ACCOUNTS = [
@@ -392,7 +393,7 @@ export default function PnL() {
         </div>
         
         {/* Actions buttons */}
-        <button className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md cursor-pointer transition-all">
+        <button className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md cursor-pointer transition-all">
           <Download size={14} /> Export Report
         </button>
       </div>
@@ -456,7 +457,7 @@ export default function PnL() {
             placeholder="Search account code or description..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold outline-none focus:border-orange-500 dark:bg-slate-800 dark:border-slate-700"
+            className="w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold outline-none focus:border-sky-500 dark:bg-slate-800 dark:border-slate-700"
           />
         </div>
         <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
@@ -561,7 +562,7 @@ export default function PnL() {
       <div className="pnl-table-card">
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 dark:bg-slate-900/40">
           <span className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider">🎯 CONSOLIDATED P&L OVERVIEW SUMMARY</span>
-          <span className="bg-orange-100 text-orange-700 font-extrabold text-[10px] px-2.5 py-1 rounded-lg">Operational Target Rollup</span>
+          <span className="bg-sky-100 text-sky-700 font-extrabold text-[10px] px-2.5 py-1 rounded-lg">Operational Target Rollup</span>
         </div>
         <div className="pnl-table-wrapper">
           <table className="pnl-table w-full">
@@ -612,8 +613,8 @@ export default function PnL() {
                 <td className="font-black text-slate-800 dark:text-white uppercase text-xs">Total Revenue</td>
                 <td className="text-right font-black">₱{revVals.juneActual.toLocaleString()}</td>
                 <td className="text-right font-black">₱{revVals.decForecast.toLocaleString()}</td>
-                <td className="text-right font-black text-orange-600">₱{revVals.budget.toLocaleString()}</td>
-                <td className="text-right font-black text-orange-600">₱{revVals.actual.toLocaleString()}</td>
+                <td className="text-right font-black text-sky-600">₱{revVals.budget.toLocaleString()}</td>
+                <td className="text-right font-black text-sky-600">₱{revVals.actual.toLocaleString()}</td>
                 <td className="text-right font-black text-emerald-600">₱{revVals.variance.toLocaleString()}</td>
               </tr>
 

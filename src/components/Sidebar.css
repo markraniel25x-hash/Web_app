@@ -50,7 +50,7 @@
 
 .brand-name {
   font-weight: 800;
-  color: #5b21b6; /* Muted Violet */
+  color: #0ea5e9; /* Sky Blue */
   font-size: 13px;
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -82,15 +82,15 @@
 }
 
 .nav-item:hover {
-  background: #f5f3ff;
-  color: #5b21b6;
+  background: #f0f9ff;
+  color: #0ea5e9;
 }
 
 .nav-item.active {
-  background: #5b21b6; /* Muted Violet Active */
+  background: #0ea5e9; /* Sky Blue Active */
   color: white;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(91, 33, 182, 0.15);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
 }
 
 .nav-item .icon {
@@ -124,7 +124,7 @@
 .user-avatar {
   width: 36px;
   height: 36px;
-  background: #5b21b6;
+  background: #0ea5e9;
   color: white;
   border-radius: 50%;
   display: flex;

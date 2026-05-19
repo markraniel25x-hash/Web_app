@@ -1,7 +1,8 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Save, Users, UserPlus, ShieldCheck, RefreshCw } from 'lucide-react';
 import { gasPost, gasGet } from '../api/gasClient';
-import './Manpower.css';
 
 const FALLBACK_MANPOWER = [
   {
@@ -117,7 +118,7 @@ export default function Manpower() {
           <button 
             onClick={saveAllocations}
             disabled={saving}
-            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md cursor-pointer transition-all disabled:opacity-50"
+            className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md cursor-pointer transition-all disabled:opacity-50"
           >
             <Save size={14} /> {saving ? "Saving..." : "Save to Google Sheets"}
           </button>
@@ -142,7 +143,7 @@ export default function Manpower() {
           <span className="text-[9px] font-bold text-slate-400 mt-2">Currently deployed at branch</span>
         </div>
 
-        <div className="manpower-stat-card manpower-card-orange">
+        <div className="manpower-stat-card manpower-card-sky">
           <span className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase">Proposed Additional Staff</span>
           <div className="flex items-baseline gap-1 mt-1">
             <span className="text-xl font-black text-slate-800 dark:text-white">+{totalAdditional}</span>
@@ -191,7 +192,7 @@ export default function Manpower() {
                 <th className="bg-slate-50/50 text-[10px] py-1">Actual</th>
                 <th className="bg-slate-50/50 text-[10px] py-1">Additional</th>
                 <th className="bg-blue-50/30 text-[10px] py-1 font-black">Actual</th>
-                <th className="bg-orange-50/30 text-[10px] py-1 font-black">Additional</th>
+                <th className="bg-sky-50/30 text-[10px] py-1 font-black">Additional</th>
               </tr>
             </thead>
             <tbody>
@@ -243,7 +244,7 @@ export default function Manpower() {
 
                     {/* Total headcount */}
                     <td className="bg-blue-50/10 text-blue-700 font-black text-sm">{rowActualTotal}</td>
-                    <td className="bg-orange-50/10 text-orange-600 font-black text-sm">+{rowAddTotal}</td>
+                    <td className="bg-sky-50/10 text-sky-600 font-black text-sm">+{rowAddTotal}</td>
                   </tr>
                 );
               })}

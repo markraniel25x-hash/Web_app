@@ -1,8 +1,9 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { gasPost, gasGet } from '../api/gasClient';
 import { Check, X, Eye, Lock, AlertTriangle, RotateCcw, Clock } from 'lucide-react';
-import './DrivenFactor.css';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTHS_FULL = [
@@ -744,7 +745,7 @@ export default function DrivenFactor() {
         statusColor = 'text-emerald-600 font-bold';
       } else if (stats.approved > 0) {
         statusText = 'In Progress';
-        statusColor = 'text-orange-500 font-bold';
+        statusColor = 'text-sky-500 font-bold';
       }
     }
 
@@ -1107,7 +1108,7 @@ export default function DrivenFactor() {
                 {selectedBranchCode && (
                   <button 
                     onClick={() => setSelectedBranchCode(null)}
-                    className="px-2.5 py-1 text-[10px] font-extrabold text-orange-600 bg-orange-50 border border-orange-200 hover:bg-orange-100 rounded-lg transition-all cursor-pointer flex items-center gap-1"
+                    className="px-2.5 py-1 text-[10px] font-extrabold text-sky-600 bg-sky-50 border border-sky-200 hover:bg-sky-100 rounded-lg transition-all cursor-pointer flex items-center gap-1"
                     title="Return to showing your full supervising scope counts"
                   >
                     <RotateCcw size={10} /> Reset to Overview
@@ -1116,7 +1117,7 @@ export default function DrivenFactor() {
               </div>
               <span className="selected-branch-label text-slate-800 text-lg font-bold flex items-center gap-2 mt-1">
                 {selectedBranchObj.type === 'branch' ? (
-                  <>📍 Branch: <span className="text-orange-600">{selectedBranchObj.code} - {selectedBranchObj.name}</span></>
+                  <>📍 Branch: <span className="text-sky-600">{selectedBranchObj.code} - {selectedBranchObj.name}</span></>
                 ) : (
                   <>
                     {selectedBranchObj.type === 'admin' && '👑 '}
@@ -1127,7 +1128,7 @@ export default function DrivenFactor() {
                     <span className="capitalize text-slate-700">
                       {selectedBranchObj.type === 'admin' ? 'Company Overview' : selectedBranchObj.type}:
                     </span>{' '}
-                    <span className="text-orange-600 font-extrabold">{selectedBranchObj.name}</span>
+                    <span className="text-sky-600 font-extrabold">{selectedBranchObj.name}</span>
                     <span className="text-xs bg-slate-100 text-slate-500 font-normal px-2 py-0.5 rounded-full ml-1">
                       {selectedBranchObj.branchesCount} Branches Rollup
                     </span>
@@ -1154,7 +1155,7 @@ export default function DrivenFactor() {
                 </span>
                 
                 <button 
-                  className={`direct-approve-badge-btn px-4 py-2 rounded-lg text-sm font-bold flex items-center transition-all ${isReadyToApprove ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-md cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
+                  className={`direct-approve-badge-btn px-4 py-2 rounded-lg text-sm font-bold flex items-center transition-all ${isReadyToApprove ? 'bg-sky-500 hover:bg-sky-600 text-white shadow-md cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
                   onClick={handleDirectApprove}
                   disabled={approvingDirect || !isReadyToApprove}
                   title={isReadyToApprove ? 'Click to sign off and approve branch budget' : !allMetricsReviewed ? `Please click the Eye 👁️ icon for all ${METRICS.length} metrics to review before approving.` : `This branch has target cells that are blank or zero. All months must be encoded.`}
@@ -1197,7 +1198,7 @@ export default function DrivenFactor() {
                 getStepStatus(selectedBranchObj, 'aa') === 'completed' 
                   ? 'bg-emerald-500 text-white' 
                   : getStepStatus(selectedBranchObj, 'aa') === 'in-progress'
-                    ? 'bg-orange-400 text-white animate-pulse'
+                    ? 'bg-sky-400 text-white animate-pulse'
                     : 'bg-slate-100 text-slate-400 border border-slate-200'
               }`}>
                 {getStepStatus(selectedBranchObj, 'aa') === 'completed' ? (
@@ -1218,7 +1219,7 @@ export default function DrivenFactor() {
                 getStepStatus(selectedBranchObj, 'ra') === 'completed' 
                   ? 'bg-emerald-500 text-white' 
                   : getStepStatus(selectedBranchObj, 'ra') === 'in-progress'
-                    ? 'bg-orange-400 text-white animate-pulse'
+                    ? 'bg-sky-400 text-white animate-pulse'
                     : 'bg-slate-100 text-slate-400 border border-slate-200'
               }`}>
                 {getStepStatus(selectedBranchObj, 'ra') === 'completed' ? (
@@ -1239,7 +1240,7 @@ export default function DrivenFactor() {
                 getStepStatus(selectedBranchObj, 'avp') === 'completed' 
                   ? 'bg-emerald-500 text-white' 
                   : getStepStatus(selectedBranchObj, 'avp') === 'in-progress'
-                    ? 'bg-orange-400 text-white animate-pulse'
+                    ? 'bg-sky-400 text-white animate-pulse'
                     : 'bg-slate-100 text-slate-400 border border-slate-200'
               }`}>
                 {getStepStatus(selectedBranchObj, 'avp') === 'completed' ? (
@@ -1260,7 +1261,7 @@ export default function DrivenFactor() {
                 getStepStatus(selectedBranchObj, 'svp') === 'completed' 
                   ? 'bg-emerald-500 text-white' 
                   : getStepStatus(selectedBranchObj, 'svp') === 'in-progress'
-                    ? 'bg-orange-400 text-white animate-pulse'
+                    ? 'bg-sky-400 text-white animate-pulse'
                     : 'bg-slate-100 text-slate-400 border border-slate-200'
               }`}>
                 {getStepStatus(selectedBranchObj, 'svp') === 'completed' ? (
@@ -1281,7 +1282,7 @@ export default function DrivenFactor() {
                 getStepStatus(selectedBranchObj, 'admin') === 'completed' 
                   ? 'bg-emerald-500 text-white' 
                   : getStepStatus(selectedBranchObj, 'admin') === 'in-progress'
-                    ? 'bg-orange-400 text-white animate-pulse'
+                    ? 'bg-sky-400 text-white animate-pulse'
                     : 'bg-slate-100 text-slate-400 border border-slate-200'
               }`}>
                 {getStepStatus(selectedBranchObj, 'admin') === 'completed' ? (
@@ -1367,7 +1368,7 @@ export default function DrivenFactor() {
                           {branch.type === 'branch' ? (
                             <span className="branch-primary-title font-semibold text-slate-800">
                               {branch.code} - {branch.name}
-                              {isSelected && !isBM && <span className="active-monitor-badge bg-orange-100 text-orange-700 ml-2 px-1.5 py-0.5 text-[9px] rounded font-bold uppercase tracking-wide">MONITORING</span>}
+                              {isSelected && !isBM && <span className="active-monitor-badge bg-sky-100 text-sky-700 ml-2 px-1.5 py-0.5 text-[9px] rounded font-bold uppercase tracking-wide">MONITORING</span>}
                             </span>
                           ) : (
                             <span className="branch-primary-title aggregate-rollup-title font-bold text-slate-900 text-sm flex items-center gap-1.5">

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
@@ -11,7 +13,6 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { gasPost, gasGet } from '../api/gasClient';
-import './Inventory.css';
 
 // Table 1 Data: Per Item supplies (Must sum to exactly ₱199,440)
 const INITIAL_PER_ITEM_DATA = [
@@ -260,7 +261,7 @@ export default function Inventory() {
           
           <button 
             onClick={() => { setModalTargetTable('per-item'); setIsModalOpen(true); }}
-            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md cursor-pointer transition-all"
+            className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md cursor-pointer transition-all"
           >
             <Plus size={14} /> Add Per-Item Request
           </button>
@@ -325,7 +326,7 @@ export default function Inventory() {
             placeholder="Search particulars..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold outline-none focus:border-orange-500 dark:bg-slate-800 dark:border-slate-700"
+            className="w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold outline-none focus:border-sky-500 dark:bg-slate-800 dark:border-slate-700"
           />
         </div>
         <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
@@ -372,7 +373,7 @@ export default function Inventory() {
                     <td className="text-xs">{row.datePurchased}</td>
                     <td className="text-center font-mono">{row.usefulLife} yrs</td>
                     <td>
-                      <span className="text-xs font-black text-orange-600">{row.targetMonth}</span>
+                      <span className="text-xs font-black text-sky-600">{row.targetMonth}</span>
                     </td>
                     <td className="text-center font-bold">{row.qty}</td>
                     <td className="text-right font-bold">₱{row.price.toLocaleString()}</td>
@@ -525,7 +526,7 @@ export default function Inventory() {
                       value={formData.particulars}
                       onChange={(e) => setFormData({ ...formData, particulars: e.target.value })}
                       placeholder="e.g. Ergonomic Office Chairs"
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="inventory-input"
                     />
                   </div>
 
@@ -534,7 +535,7 @@ export default function Inventory() {
                     <select 
                       value={formData.subAccount}
                       onChange={(e) => setFormData({ ...formData, subAccount: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="inventory-input"
                     >
                       <option value="Stationery and Office Supplies">Stationery and Office Supplies</option>
                       <option value="Emergency Supplies">Emergency Supplies</option>
@@ -550,7 +551,7 @@ export default function Inventory() {
                       <select 
                         value={formData.condition}
                         onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
-                        className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                        className="inventory-input"
                       >
                         <option value="Unavailable/Lacking">Unavailable/Lacking</option>
                         <option value="Non-functional">Non-functional / Broken</option>
@@ -565,7 +566,7 @@ export default function Inventory() {
                         value={formData.datePurchased}
                         onChange={(e) => setFormData({ ...formData, datePurchased: e.target.value })}
                         placeholder="e.g. January 12, 2021 or —"
-                        className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                        className="inventory-input"
                       />
                     </div>
                   </div>
@@ -577,7 +578,7 @@ export default function Inventory() {
                     <select 
                       value={formData.targetMonth}
                       onChange={(e) => setFormData({ ...formData, targetMonth: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="inventory-input"
                     >
                       <option value="Monthly">Monthly</option>
                       <option value="January">January</option>
@@ -605,7 +606,7 @@ export default function Inventory() {
                       min={1}
                       value={formData.qty}
                       onChange={(e) => setFormData({ ...formData, qty: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="inventory-input"
                     />
                   </div>
 
@@ -618,7 +619,7 @@ export default function Inventory() {
                       required 
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      className="w-full border border-slate-200 bg-slate-50 rounded-xl px-3 py-2 text-xs font-bold dark:bg-slate-800 dark:border-slate-700 outline-none"
+                      className="inventory-input"
                     />
                   </div>
                 </div>
@@ -635,7 +636,7 @@ export default function Inventory() {
                 </button>
                 <button 
                   type="submit"
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-md"
+                  className="bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-md"
                 >
                   Submit Request
                 </button>
