@@ -250,14 +250,14 @@ export default function Dashboard() {
   });
 
   const STAT_CARDS = [
-    { id: 'clients', label: getCardLabel('clients', 'Clients Forecast'), value: getMetricTotal('clients'), actual: getMetricActual('clients'), percent: getPercentage('clients'), icon: <Users size={22} />, target: 'driven-factor' },
-    { id: 'savings', label: getCardLabel('savings', 'Total Savings Target'), value: getMetricTotal('savings'), actual: getMetricActual('savings'), percent: getPercentage('savings'), icon: <Wallet size={22} />, target: 'driven-factor' },
-    { id: 'disbursement', label: getCardLabel('disbursement', 'Loan Disbursement'), value: getMetricTotal('disbursement'), actual: getMetricActual('disbursement'), percent: getPercentage('disbursement'), icon: <Coins size={22} />, target: 'driven-factor' },
-    { id: 'collection', label: getCardLabel('collection', 'Loan Collection'), value: getMetricTotal('collection'), actual: getMetricActual('collection'), percent: getPercentage('collection'), icon: <CirclePesoSign size={20} />, target: 'driven-factor' },
-    { id: 'portfolio', label: getCardLabel('portfolio', 'Loan Portfolio'), value: getMetricTotal('portfolio'), actual: getMetricActual('portfolio'), percent: getPercentage('portfolio'), icon: <Landmark size={22} />, target: 'driven-factor' },
-    { id: 'gross_revenue', label: getCardLabel('gross_revenue', 'Gross Revenue'), value: getMetricTotal('gross_revenue'), actual: getMetricActual('gross_revenue'), percent: getPercentage('gross_revenue'), icon: <BarChart3 size={22} />, target: 'driven-factor' },
-    { id: 'net_gross', label: getCardLabel('net_gross', 'Net Gross Revenue'), value: getMetricTotal('net_gross'), actual: getMetricActual('net_gross'), percent: getPercentage('net_gross'), icon: <TrendingUp size={22} />, target: 'driven-factor' },
-    { id: 'rebates', label: getCardLabel('rebates', 'Rebates from Loan'), value: getMetricTotal('rebates'), actual: getMetricActual('rebates'), percent: getPercentage('rebates'), icon: <Percent size={22} />, target: 'driven-factor' },
+    { id: 'clients', label: getCardLabel('clients', 'Clients Forecast'), value: getMetricTotal('clients'), actual: getMetricActual('clients'), percent: getPercentage('clients'), icon: <Users size={16} />, target: 'driven-factor' },
+    { id: 'savings', label: getCardLabel('savings', 'Total Savings Target'), value: getMetricTotal('savings'), actual: getMetricActual('savings'), percent: getPercentage('savings'), icon: <Wallet size={16} />, target: 'driven-factor' },
+    { id: 'disbursement', label: getCardLabel('disbursement', 'Loan Disbursement'), value: getMetricTotal('disbursement'), actual: getMetricActual('disbursement'), percent: getPercentage('disbursement'), icon: <Coins size={16} />, target: 'driven-factor' },
+    { id: 'collection', label: getCardLabel('collection', 'Loan Collection'), value: getMetricTotal('collection'), actual: getMetricActual('collection'), percent: getPercentage('collection'), icon: <CirclePesoSign size={14} />, target: 'driven-factor' },
+    { id: 'portfolio', label: getCardLabel('portfolio', 'Loan Portfolio'), value: getMetricTotal('portfolio'), actual: getMetricActual('portfolio'), percent: getPercentage('portfolio'), icon: <Landmark size={16} />, target: 'driven-factor' },
+    { id: 'gross_revenue', label: getCardLabel('gross_revenue', 'Gross Revenue'), value: getMetricTotal('gross_revenue'), actual: getMetricActual('gross_revenue'), percent: getPercentage('gross_revenue'), icon: <BarChart3 size={16} />, target: 'driven-factor' },
+    { id: 'net_gross', label: getCardLabel('net_gross', 'Net Gross Revenue'), value: getMetricTotal('net_gross'), actual: getMetricActual('net_gross'), percent: getPercentage('net_gross'), icon: <TrendingUp size={16} />, target: 'driven-factor' },
+    { id: 'rebates', label: getCardLabel('rebates', 'Rebates from Loan'), value: getMetricTotal('rebates'), actual: getMetricActual('rebates'), percent: getPercentage('rebates'), icon: <Percent size={16} />, target: 'driven-factor' },
   ];
 
   const renderContent = () => {
@@ -308,39 +308,39 @@ export default function Dashboard() {
               </div>
             </div>
             
-            {/* Stat metric grids Redesigned to 60/30/10 light mode style */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Stat metric grids Redesigned to dynamic 1/2 row layout (8 columns on extra large, 4 on medium screens) */}
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-3">
               {STAT_CARDS.map((card) => (
                 <div 
                   key={card.id} 
-                  className="bg-white hover:bg-slate-50/40 rounded-2xl border border-slate-200/80 p-5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group relative overflow-hidden cursor-pointer active:scale-[0.99]" 
+                  className="bg-white hover:bg-slate-50/45 rounded-xl border border-slate-200/80 p-3.5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group relative overflow-hidden cursor-pointer active:scale-[0.99]" 
                   onClick={() => setActiveTab(card.target)}
                 >
-                  <div className="flex justify-between items-start">
-                    <div className="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shadow-md shadow-sky-500/10 group-hover:scale-105 transition-transform">
+                  <div className="flex justify-between items-center gap-1.5">
+                    <div className="w-8 h-8 rounded-lg bg-sky-500 text-white flex items-center justify-center shadow-md shadow-sky-500/10 group-hover:scale-105 transition-transform shrink-0">
                       {card.icon}
                     </div>
-                    <div className="bg-sky-50 text-sky-600 font-extrabold text-[10px] tracking-wider uppercase px-2 py-1 rounded-lg border border-sky-100">
+                    <div className="bg-sky-50 text-sky-600 font-extrabold text-[8px] xl:text-[9px] tracking-wider uppercase px-1.5 py-0.5 rounded-md border border-sky-100 shrink-0">
                       {card.percent} Reach
                     </div>
                   </div>
                   
-                  <div className="mt-5 flex flex-col">
-                    <span className="text-2xl font-black text-slate-800 tracking-tight leading-none">
+                  <div className="mt-3 flex flex-col">
+                    <span className="text-lg xl:text-xl font-black text-slate-800 tracking-tight leading-none truncate">
                       {loading ? '...' : card.actual}
                     </span>
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-2 group-hover:text-slate-600 transition-colors">
+                    <span className="text-[9px] xl:text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1 group-hover:text-slate-600 transition-colors truncate" title={card.label}>
                       {card.label}
                     </span>
                   </div>
                   
-                  <div className="mt-4 border-t border-dashed border-slate-100 pt-3 flex justify-between items-center text-[10px] font-bold text-slate-400">
+                  <div className="mt-2.5 border-t border-dashed border-slate-100 pt-2 flex justify-between items-center text-[9px] font-bold text-slate-400">
                     <span>TARGET:</span>
-                    <span className="text-slate-600 font-mono text-xs">{card.value}</span>
+                    <span className="text-slate-600 font-mono text-[9px] xl:text-[10px] truncate">{card.value}</span>
                   </div>
                   
                   {/* Subtle hover background highlight bubble */}
-                  <div className="absolute right-0 bottom-0 w-24 h-24 bg-gradient-to-br from-sky-500/5 to-transparent rounded-full translate-x-8 translate-y-8 group-hover:scale-110 transition-transform"></div>
+                  <div className="absolute right-0 bottom-0 w-16 h-16 bg-gradient-to-br from-sky-500/5 to-transparent rounded-full translate-x-6 translate-y-6 group-hover:scale-110 transition-transform"></div>
                 </div>
               ))}
             </div>
