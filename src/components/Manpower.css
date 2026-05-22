@@ -9,14 +9,14 @@
 /* KPI metric cards */
 .manpower-grid-stats {
   display: grid;
-  grid-template-cols: 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
   margin-bottom: 24px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .manpower-grid-stats {
-    grid-template-cols: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
