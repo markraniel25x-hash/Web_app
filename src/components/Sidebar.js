@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, TrendingUp, LogOut, Coins, BarChart3, Layers, Package, Users } from 'lucide-react';
+import { Home, TrendingUp, LogOut, Coins, BarChart3, Layers, Package, Users, Building2 } from 'lucide-react';
 import logo from '../assets/logo.png';
 
 export default function Sidebar({ collapsed, activeTab, setActiveTab, user, logout }) {
@@ -17,6 +17,7 @@ export default function Sidebar({ collapsed, activeTab, setActiveTab, user, logo
     { id: 'capex', label: 'CAPEX Register', icon: <Layers size={18} /> },
     { id: 'inventory', label: 'Supplies Inventory', icon: <Package size={18} /> },
     { id: 'manpower', label: 'Manpower Request', icon: <Users size={18} /> },
+    { id: 'cost-center', label: 'Cost Centers', icon: <Building2 size={18} /> },
   ];
 
   return (

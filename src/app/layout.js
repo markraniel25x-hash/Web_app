@@ -8,6 +8,7 @@ import '../components/Inventory.css';
 import '../components/Manpower.css';
 import '../components/Dashboard.css';
 import '../components/LoginPage.css';
+import '../components/CostCenter.css';
 
 export const metadata = {
   title: 'ASA Philippines Budgeting System',

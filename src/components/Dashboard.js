@@ -10,6 +10,7 @@ import PnL from './PnL';
 import Capex from './Capex';
 import Inventory from './Inventory';
 import Manpower from './Manpower';
+import CostCenter from './CostCenter';
 import { 
   Users, 
   Wallet, 
@@ -367,6 +368,8 @@ export default function Dashboard() {
         return <Inventory />;
       case 'manpower':
         return <Manpower />;
+      case 'cost-center':
+        return <CostCenter />;
       default:
         return (
           <div className="p-8 text-center bg-white border border-slate-200 rounded-2xl animate-fadeIn">
